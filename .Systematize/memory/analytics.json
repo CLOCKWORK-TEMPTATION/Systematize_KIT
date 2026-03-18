@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "features": {
+    "main": {
+      "created_at": "2026-03-18T02:17:00.412Z",
+      "events": [
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T02:17:00.413Z",
+          "command": "generate-constitution",
+          "status": "completed",
+          "has_git": false
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T02:17:00.430Z",
+          "command": "update-agent-context",
+          "status": "completed",
+          "has_git": false
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T02:17:00.490Z",
+          "command": "setup-plan",
+          "status": "completed",
+          "has_git": false
+        }
+      ],
+      "phases": {}
+    }
+  },
+  "extensions": {
+    "hooks_executed": [],
+    "custom_commands_used": []
+  }
+}

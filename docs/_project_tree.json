@@ -1,0 +1,85 @@
+{
+  "project": "Systematize_KIT",
+  "generated_at": "2026-03-18",
+  "root": {
+    "files": [
+      "CLAUDE.md",
+      "systematize-kit-v2-expansion-b73080.md"
+    ],
+    "directories": {
+      "commands": [
+        "syskit.analyze.md",
+        "syskit.checklist.md",
+        "syskit.clarify.md",
+        "syskit.constitution.md",
+        "syskit.dashboard.md",
+        "syskit.diff.md",
+        "syskit.export.md",
+        "syskit.guide.md",
+        "syskit.healthcheck.md",
+        "syskit.implement.md",
+        "syskit.metrics.md",
+        "syskit.plan.md",
+        "syskit.quickstart.md",
+        "syskit.research.md",
+        "syskit.review.md",
+        "syskit.status.md",
+        "syskit.sync.md",
+        "syskit.systematize.md",
+        "syskit.tasks.md",
+        "syskit.taskstoissues.md"
+      ],
+      ".Systematize": {
+        "config": [
+          "alerts.yml",
+          "extensions.yml",
+          "syskit-config.yml"
+        ],
+        "memory": [
+          "constitution.md",
+          "sync-state.json",
+          "analytics.json"
+        ],
+        "scripts": {
+          "powershell": [
+            "auto-commit.ps1",
+            "check-alerts.ps1",
+            "check-prerequisites.ps1",
+            "common.ps1",
+            "create-new-feature.ps1",
+            "export-dashboard.ps1",
+            "generate-constitution.ps1",
+            "generate-pr.ps1",
+            "get-feature-status.ps1",
+            "record-analytics.ps1",
+            "run-healthcheck.ps1",
+            "setup-plan.ps1",
+            "setup-research.ps1",
+            "setup-tasks.ps1",
+            "snapshot-artifacts.ps1",
+            "update-agent-context.ps1",
+            "update-sync-state.ps1"
+          ],
+          "node": [
+            "cli.mjs",
+            "README.md",
+            "lib/*"
+          ]
+        },
+        "other_dirs": [
+          "templates",
+          "presets",
+          "extensions",
+          "snapshots",
+          "exports"
+        ]
+      },
+      "docs": [
+        "PROGRESS.md",
+        "CORE_MECHANISM.md",
+        "FILE_RELATIONS.md",
+        "_project_tree.json"
+      ]
+    }
+  }
+}

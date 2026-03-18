@@ -1,0 +1,12 @@
+{
+  "name": "systematize-kit",
+  "private": true,
+  "scripts": {
+    "test": "node --test .Systematize/scripts/node/tests/*.test.mjs",
+    "verify:contracts": "node .Systematize/scripts/node/tests/verify-contracts.mjs",
+    "verify": "npm run test && npm run verify:contracts"
+  },
+  "dependencies": {
+    "docx": "^9.6.1"
+  }
+}

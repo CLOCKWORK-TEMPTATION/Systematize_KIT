@@ -1,0 +1,32 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run verification suite
+        run: npm run verify
+
+      - name: Smoke PowerShell entrypoints
+        shell: pwsh
+        run: |
+          pwsh -File .Systematize/scripts/powershell/check-alerts.ps1 -Help
+          pwsh -File .Systematize/scripts/powershell/update-agent-context.ps1 -Help
+          pwsh -File .Systematize/scripts/powershell/setup-plan.ps1 -Help
