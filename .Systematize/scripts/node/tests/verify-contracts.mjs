@@ -201,6 +201,18 @@ check(
   distributionDocContent.includes('npm run setup:hooks'),
   'Distribution documentation no longer documents manual hook installation'
 );
+check(
+  distributionDocContent.includes('windows-latest'),
+  'Distribution documentation no longer documents the Windows proof environment'
+);
+check(
+  distributionDocContent.includes('ubuntu-latest'),
+  'Distribution documentation no longer documents the Linux proof environment'
+);
+check(
+  distributionDocContent.includes('على هدف نظيف داخل اختبارات التسليم'),
+  'Distribution documentation no longer states that generated installers are re-verified against a fresh target'
+);
 
 const buildDistributionContent = read('.Systematize/scripts/node/lib/build-distribution.mjs');
 check(
@@ -218,12 +230,32 @@ check(
   'CI no longer proves the official distribution path'
 );
 check(
+  ciWorkflowContent.includes('matrix:'),
+  'CI no longer declares a cross-environment verification matrix'
+);
+check(
+  ciWorkflowContent.includes('fail-fast: false'),
+  'CI no longer forces every environment in the verification matrix to report independently'
+);
+check(
+  ciWorkflowContent.includes('windows-latest'),
+  'CI no longer proves the official flow on Windows'
+);
+check(
+  ciWorkflowContent.includes('ubuntu-latest'),
+  'CI no longer proves the official flow on Linux'
+);
+check(
   ciWorkflowContent.includes('git diff --exit-code --name-only'),
   'CI no longer proves that tracked files stay clean after packaging'
 );
 check(
   (ciWorkflowContent.match(/npm run verify/g) || []).length >= 2,
   'CI no longer verifies both before and after the official distribution path'
+);
+check(
+  ciWorkflowContent.includes('shell: pwsh'),
+  'CI no longer exercises the PowerShell compatibility shell inside the official proof path'
 );
 
 const workflowManagedFiles = [
