@@ -8,6 +8,14 @@ const repoRoot = resolve(__dirname, '../../../..');
 const catalogPath = join(repoRoot, '.Systematize', 'config', 'command-catalog.json');
 const outputPath = join(repoRoot, 'docs', 'COMMAND_RUNTIME_MAP.md');
 
+function detectLineEnding(content) {
+  return content.includes('\r\n') ? '\r\n' : '\n';
+}
+
+function applyLineEnding(content, lineEnding) {
+  return content.replace(/\n/g, lineEnding);
+}
+
 function buildMarkdown(catalog) {
   const lines = [
     '# خريطة الربط بين الحوكمة والمحرك',
@@ -44,11 +52,12 @@ function buildMarkdown(catalog) {
   return lines.join('\n');
 }
 
-const expected = buildMarkdown(JSON.parse(readFileSync(catalogPath, 'utf8')));
 const shouldCheck = process.argv.includes('--check');
+const current = existsSync(outputPath) ? readFileSync(outputPath, 'utf8') : '';
+const lineEnding = detectLineEnding(current);
+const expected = applyLineEnding(buildMarkdown(JSON.parse(readFileSync(catalogPath, 'utf8'))), lineEnding);
 
 if (shouldCheck) {
-  const current = existsSync(outputPath) ? readFileSync(outputPath, 'utf8') : '';
   if (current.trimEnd() !== expected.trimEnd()) {
     console.error(`Generated command runtime map is out of date: ${outputPath}`);
     process.exit(1);
@@ -56,6 +65,6 @@ if (shouldCheck) {
 
   console.log('Command runtime map is up to date.');
 } else {
-  writeFileSync(outputPath, `${expected}\n`, 'utf8');
+  writeFileSync(outputPath, `${expected}${lineEnding}`, 'utf8');
   console.log(`Generated ${outputPath}`);
 }
