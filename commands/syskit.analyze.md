@@ -4,8 +4,8 @@ command_name: analyze
 command_family: Inspection
 command_stage: deep-inspection
 command_requirement_level: optional
-command_execution_mode: llm-only
-runtime_command: null
+command_execution_mode: hybrid
+runtime_command: setup-analyze
 handoffs:
   - label: Implement Project
     agent: syskit.implement

@@ -4,6 +4,9 @@ command_name: clarify
 command_family: Gate
 command_stage: phase-02
 command_requirement_level: mandatory
+command_execution_mode: hybrid
+runtime_command: setup-clarify
+handoffs: 
 command_execution_mode: llm-only
 runtime_command: null
 handoffs:

@@ -18,8 +18,8 @@
       "family": "Gate",
       "stage": "phase-01",
       "requirement_level": "mandatory",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-systematize",
       "notes": "العقد الحاكم الأول لصياغة وثيقة sys."
     },
     {
@@ -28,8 +28,8 @@
       "family": "Gate",
       "stage": "phase-02",
       "requirement_level": "mandatory",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-clarify",
       "notes": "يعالج الغموض قبل تثبيت الدستور."
     },
     {
@@ -78,8 +78,8 @@
       "family": "Gate",
       "stage": "phase-07",
       "requirement_level": "conditional",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-checklist",
       "notes": "طبقة مراجعة قبل التنفيذ أو التسليم."
     },
     {
@@ -88,8 +88,8 @@
       "family": "Gate",
       "stage": "phase-08",
       "requirement_level": "mandatory",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-review",
       "notes": "يبقى قرارًا حوكميًا لا أمر تشغيل."
     },
     {
@@ -98,8 +98,8 @@
       "family": "Gate",
       "stage": "phase-09",
       "requirement_level": "mandatory",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-implement",
       "notes": "تنفيذ موجّه بشريًا أو عبر وكيل، لا أمر CLI مستقل."
     },
     {
@@ -128,8 +128,8 @@
       "family": "Inspection",
       "stage": "deep-inspection",
       "requirement_level": "optional",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-analyze",
       "notes": "تحليل عميق مع سياسات منفصلة عن التنفيذ."
     },
     {
@@ -148,8 +148,8 @@
       "family": "Inspection",
       "stage": "change-control",
       "requirement_level": "optional",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-diff",
       "notes": "لا يملك دعم تشغيل رسميًا بعد."
     },
     {
@@ -198,8 +198,8 @@
       "family": "Admin",
       "stage": "onboarding",
       "requirement_level": "optional",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-quickstart",
       "notes": "طبقة تهيئة ذهنية للمستخدم."
     },
     {
@@ -208,8 +208,8 @@
       "family": "Admin",
       "stage": "onboarding",
       "requirement_level": "optional",
-      "execution_mode": "llm-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-guide",
       "notes": "شرح وإرشاد لا تشغيل مباشر."
     },
     {
@@ -218,8 +218,8 @@
       "family": "Integration",
       "stage": "integration",
       "requirement_level": "optional",
-      "execution_mode": "integration-only",
-      "runtime_command": null,
+      "execution_mode": "hybrid",
+      "runtime_command": "setup-taskstoissues",
       "notes": "تكامل خارجي اختياري رسميًا."
     }
   ]

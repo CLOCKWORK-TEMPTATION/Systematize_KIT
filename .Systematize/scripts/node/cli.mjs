@@ -27,7 +27,17 @@ const COMMANDS = {
   'update-agent-context': () => import('./lib/update-agent-context.mjs'),
   'setup-plan': () => import('./lib/setup-plan.mjs'),
   'setup-research': () => import('./lib/setup-research.mjs'),
-  'setup-tasks': () => import('./lib/setup-tasks.mjs')
+  'setup-tasks': () => import('./lib/setup-tasks.mjs'),
+  'setup-systematize': () => import('./lib/setup-systematize.mjs'),
+  'setup-clarify': () => import('./lib/setup-clarify.mjs'),
+  'setup-checklist': () => import('./lib/setup-checklist.mjs'),
+  'setup-review': () => import('./lib/setup-review.mjs'),
+  'setup-implement': () => import('./lib/setup-implement.mjs'),
+  'setup-analyze': () => import('./lib/setup-analyze.mjs'),
+  'setup-diff': () => import('./lib/setup-diff.mjs'),
+  'setup-quickstart': () => import('./lib/setup-quickstart.mjs'),
+  'setup-guide': () => import('./lib/setup-guide.mjs'),
+  'setup-taskstoissues': () => import('./lib/setup-taskstoissues.mjs')
 };
 
 const MUTATING_COMMANDS = new Set([
@@ -41,10 +51,16 @@ const MUTATING_COMMANDS = new Set([
   'update-agent-context',
   'setup-plan',
   'setup-research',
-  'setup-tasks'
+  'setup-tasks',
+  'setup-systematize',
+  'setup-clarify',
+  'setup-checklist',
+  'setup-review',
+  'setup-implement',
+  'setup-quickstart'
 ]);
 
-const VALIDATION_COMMANDS = new Set(['check-prerequisites', 'healthcheck', 'check-alerts', 'feature-status']);
+const VALIDATION_COMMANDS = new Set(['check-prerequisites', 'healthcheck', 'check-alerts', 'feature-status', 'setup-analyze', 'setup-diff', 'setup-guide', 'setup-taskstoissues']);
 const CLEAN_TREE_COMMANDS = new Set(['build-distribution']);
 
 class CommandExitError extends Error {
@@ -109,7 +125,17 @@ function buildHelpText(version, customCommands) {
     '  update-agent-context  تحديث ملفات agent context',
     '  setup-plan            تهيئة خطة التنفيذ',
     '  setup-research        تهيئة البحث',
-    '  setup-tasks           تهيئة قائمة المهام'
+    '  setup-tasks           تهيئة قائمة المهام',
+    '  setup-systematize     تهيئة وثيقة sys',
+    '  setup-clarify         تهيئة التوضيح',
+    '  setup-checklist       تهيئة قائمة المراجعة',
+    '  setup-review          تهيئة المراجعة',
+    '  setup-implement       تهيئة التنفيذ',
+    '  setup-analyze         تهيئة التحليل',
+    '  setup-diff            حساب الفروقات',
+    '  setup-quickstart      تهيئة المسار السريع',
+    '  setup-guide           كشف الحالة والتوصية',
+    '  setup-taskstoissues   تهيئة تحويل المهام لتذاكر'
   ];
 
   const customEntries = Object.values(customCommands);

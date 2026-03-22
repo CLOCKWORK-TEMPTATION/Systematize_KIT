@@ -4,33 +4,32 @@
 
 | الأمر | العائلة | المرحلة | الإلزام | نمط التنفيذ | الإسناد التنفيذي | الملاحظة |
 | --- | --- | --- | --- | --- | --- | --- |
-| `systematize` | Gate | phase-01 | mandatory | llm-only | — | العقد الحاكم الأول لصياغة وثيقة sys. |
-| `clarify` | Gate | phase-02 | mandatory | llm-only | — | يعالج الغموض قبل تثبيت الدستور. |
+| `systematize` | Gate | phase-01 | mandatory | hybrid | setup-systematize | العقد الحاكم الأول لصياغة وثيقة sys. |
+| `clarify` | Gate | phase-02 | mandatory | hybrid | setup-clarify | يعالج الغموض قبل تثبيت الدستور. |
 | `constitution` | Gate | phase-03 | mandatory | runtime-backed | generate-constitution | أمر حوكمي مدعوم بمحرك يولد الدستور. |
 | `research` | Gate | phase-04 | mandatory | runtime-backed | setup-research | يجهز البحث لكنه يبقى موجّهًا حوكميًا. |
 | `plan` | Gate | phase-05 | mandatory | runtime-backed | setup-plan | يربط التخطيط بالبوابات السابقة. |
 | `tasks` | Gate | phase-06 | mandatory | runtime-backed | setup-tasks | يفصل التنفيذ إلى مهام تحت الحوكمة. |
-| `checklist` | Gate | phase-07 | conditional | llm-only | — | طبقة مراجعة قبل التنفيذ أو التسليم. |
-| `review` | Gate | phase-08 | mandatory | llm-only | — | يبقى قرارًا حوكميًا لا أمر تشغيل. |
-| `implement` | Gate | phase-09 | mandatory | llm-only | — | تنفيذ موجّه بشريًا أو عبر وكيل، لا أمر CLI مستقل. |
+| `checklist` | Gate | phase-07 | conditional | hybrid | setup-checklist | طبقة مراجعة قبل التنفيذ أو التسليم. |
+| `review` | Gate | phase-08 | mandatory | hybrid | setup-review | يبقى قرارًا حوكميًا لا أمر تشغيل. |
+| `implement` | Gate | phase-09 | mandatory | hybrid | setup-implement | تنفيذ موجّه بشريًا أو عبر وكيل، لا أمر CLI مستقل. |
 | `status` | Inspection | inspection | mandatory | runtime-backed | feature-status | فحص مباشر لحالة الميزة. |
 | `healthcheck` | Inspection | inspection | mandatory | runtime-backed | healthcheck | فحص جودة وتتبع صحة المخرجات. |
-| `analyze` | Inspection | deep-inspection | optional | llm-only | — | تحليل عميق مع سياسات منفصلة عن التنفيذ. |
+| `analyze` | Inspection | deep-inspection | optional | hybrid | setup-analyze | تحليل عميق مع سياسات منفصلة عن التنفيذ. |
 | `sync` | Inspection | change-control | optional | runtime-backed | update-sync-state | تحكم في المزامنة وحالة التغييرات. |
-| `diff` | Inspection | change-control | optional | llm-only | — | لا يملك دعم تشغيل رسميًا بعد. |
+| `diff` | Inspection | change-control | optional | hybrid | setup-diff | لا يملك دعم تشغيل رسميًا بعد. |
 | `dashboard` | Portfolio | reporting | optional | runtime-backed | export-dashboard | طبقة فوقية للتجميع وليس من قلب الحوكمة. |
 | `metrics` | Portfolio | reporting | optional | runtime-backed | record-analytics | يعتمد على بيانات analytics الاختيارية. |
 | `export` | Portfolio | reporting | optional | runtime-backed | export-dashboard | قدرة تقريرية اختيارية. |
 | `init` | Admin | bootstrap | mandatory | runtime-backed | init | أمر الإدارة التأسيسي للقلب. |
-| `quickstart` | Admin | onboarding | optional | llm-only | — | طبقة تهيئة ذهنية للمستخدم. |
-| `guide` | Admin | onboarding | optional | llm-only | — | شرح وإرشاد لا تشغيل مباشر. |
-| `taskstoissues` | Integration | integration | optional | integration-only | — | تكامل خارجي اختياري رسميًا. |
+| `quickstart` | Admin | onboarding | optional | hybrid | setup-quickstart | طبقة تهيئة ذهنية للمستخدم. |
+| `guide` | Admin | onboarding | optional | hybrid | setup-guide | شرح وإرشاد لا تشغيل مباشر. |
+| `taskstoissues` | Integration | integration | optional | hybrid | setup-taskstoissues | تكامل خارجي اختياري رسميًا. |
 
 ## تفسير الأنماط
 
-- `llm-only`: أمر حوكمي أو تحليلي بلا أمر تشغيل رسمي مباشر.
 - `runtime-backed`: أمر حوكمي أو تقريري مرتبط بأمر فعلي داخل محرك Node.
-- `integration-only`: قدرة تكامل خارجية اختيارية وليست جزءًا من القلب.
+- `hybrid`: أمر يجمع بين فرض تنفيذي runtime وإنتاج توليدي — المدخلات والمخرجات والبوابات مفروضة تنفيذيًا.
 
 ## تفسير العائلات
 

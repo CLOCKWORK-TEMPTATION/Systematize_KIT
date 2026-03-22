@@ -4,8 +4,8 @@ command_name: systematize
 command_family: Gate
 command_stage: phase-01
 command_requirement_level: mandatory
-command_execution_mode: llm-only
-runtime_command: null
+command_execution_mode: hybrid
+runtime_command: setup-systematize
 handoffs:
   - label: Clarify Sys Requirements
     agent: syskit.clarify

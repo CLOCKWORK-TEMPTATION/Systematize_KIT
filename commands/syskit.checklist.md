@@ -4,8 +4,8 @@ command_name: checklist
 command_family: Gate
 command_stage: phase-07
 command_requirement_level: conditional
-command_execution_mode: llm-only
-runtime_command: null
+command_execution_mode: hybrid
+runtime_command: setup-checklist
 handoffs:
   - label: Analyze For Consistency
     agent: syskit.analyze
