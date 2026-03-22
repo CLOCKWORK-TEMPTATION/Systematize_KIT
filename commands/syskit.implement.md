@@ -1,5 +1,11 @@
 ---
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
+command_name: implement
+command_family: Gate
+command_stage: phase-09
+command_requirement_level: mandatory
+command_execution_mode: llm-only
+runtime_command: null
 handoffs:
   - label: Convert Tasks to GitHub Issues
     agent: syskit.taskstoissues
@@ -176,7 +182,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      ├── Build: ✅ passing
      ├── Tests: ✅ 12/12 passing
      ├── Health: 85/100
-     └── Committed: docs(aminooof): implement — phase 2 complete [001-user-auth]
+     └── Committed: docs(features): implement — phase 2 complete [001-user-auth]
      ```
 
 7. **Rollback Support** (new):

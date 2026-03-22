@@ -1,14 +1,18 @@
-// Systematize KIT — دوال مشتركة (مكافئ common.ps1)
+// Systematize Framework — دوال مشتركة (مكافئ common.ps1)
 import { execSync } from 'child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'fs';
 import { join, resolve, dirname, basename } from 'path';
 import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
+import { readFlatYamlFile } from './config-parser.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-export const FEATURE_WORKSPACE_DIR = 'aminooof';
-export const LEGACY_FEATURE_WORKSPACE_DIR = Buffer.from('c3BlY3M=', 'base64').toString('utf8');
+export const FEATURE_WORKSPACE_DIR = 'features';
+export const LEGACY_FEATURE_WORKSPACE_DIRS = [
+  'aminooof',
+  Buffer.from('c3BlY3M=', 'base64').toString('utf8')
+];
 
 function hasNumberedFeatureDirs(rootDir) {
   if (!existsSync(rootDir)) return false;
@@ -33,19 +37,22 @@ function moveFeatureWorkspace(sourceDir, targetDir) {
 
 export function getFeatureWorkspaceRoot(repoRoot = getRepoRoot(), options = {}) {
   const nextRoot = join(repoRoot, FEATURE_WORKSPACE_DIR);
-  const legacyRoot = join(repoRoot, LEGACY_FEATURE_WORKSPACE_DIR);
   const nextExists = existsSync(nextRoot);
-  const legacyExists = existsSync(legacyRoot);
+  const existingLegacyRoots = LEGACY_FEATURE_WORKSPACE_DIRS
+    .map((name) => join(repoRoot, name))
+    .filter((candidate) => existsSync(candidate));
   const mutating = options.mutating === true;
   const ensureExists = options.ensureExists === true;
 
-  if (nextExists && legacyExists) {
+  if ((nextExists && existingLegacyRoots.length > 0) || existingLegacyRoots.length > 1) {
+    const conflictingRoots = [nextRoot, ...existingLegacyRoots].filter((item, index, array) => array.indexOf(item) === index);
     throw new Error(
-      `Conflicting workflow roots detected. Resolve manually before continuing:\n- ${nextRoot}\n- ${legacyRoot}`
+      `Conflicting workflow roots detected. Resolve manually before continuing:\n- ${conflictingRoots.join('\n- ')}`
     );
   }
 
-  if (legacyExists && !nextExists) {
+  if (existingLegacyRoots.length === 1 && !nextExists) {
+    const [legacyRoot] = existingLegacyRoots;
     if (mutating) {
       moveFeatureWorkspace(legacyRoot, nextRoot);
       return nextRoot;
@@ -83,8 +90,17 @@ export function getRepoRoot() {
     const result = execSync('git rev-parse --show-toplevel', { encoding: 'utf8', stdio: ['pipe','pipe','pipe'] }).trim();
     return result;
   } catch {
-    // Fallback: ابحث عن .Systematize من مسار السكريبت
-    let current = resolve(__dirname, '../../..');
+    // Fallback 1: ابحث عن .Systematize أو .git من مسار التنفيذ الحالي
+    let current = resolve(process.cwd());
+    while (current !== dirname(current)) {
+      if (existsSync(join(current, '.Systematize')) || existsSync(join(current, '.git'))) {
+        return current;
+      }
+      current = dirname(current);
+    }
+
+    // Fallback 2: ابحث عن .Systematize من مسار السكريبت
+    current = resolve(__dirname, '../../..');
     while (current !== dirname(current)) {
       if (existsSync(join(current, '.Systematize')) || existsSync(join(current, '.git'))) {
         return current;
@@ -100,7 +116,7 @@ export function getCurrentBranch() {
   try {
     return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8', stdio: ['pipe','pipe','pipe'] }).trim();
   } catch {
-    // Fallback: آخر feature من aminooof/
+    // Fallback: آخر feature من مجلد features/
     try {
       const featureRoot = getFeatureWorkspaceRoot(getRepoRoot());
       if (existsSync(featureRoot)) {
@@ -135,6 +151,7 @@ export function getFeaturePathsEnv(options = {}) {
     CURRENT_BRANCH: branch,
     HAS_GIT: hasGit(),
     FEATURE_ROOT: featureRoot,
+    FEATURES_DIR: featureDir,
     AMINOOOF_DIR: featureDir,
     FEATURE_DIR: featureDir,
     FEATURE_SYS: join(featureDir, 'sys.md'),
@@ -149,7 +166,7 @@ export function getFeaturePathsEnv(options = {}) {
 
 // === دوال v2 ===
 
-export function getAllAminooofDirs(repoRoot, options = {}) {
+export function getAllFeatureDirs(repoRoot, options = {}) {
   const featureRoot = getFeatureWorkspaceRoot(repoRoot || getRepoRoot(), options);
   if (!existsSync(featureRoot)) return [];
   return readdirSync(featureRoot)
@@ -157,6 +174,8 @@ export function getAllAminooofDirs(repoRoot, options = {}) {
     .sort()
     .map(d => ({ name: d, path: join(featureRoot, d) }));
 }
+
+export const getAllAminooofDirs = getAllFeatureDirs;
 
 export function getDocumentCompletionStatus(filePath, options = {}) {
   if (!existsSync(filePath)) {
@@ -253,25 +272,7 @@ export function getFeatureProgress(featureDir) {
 
 export function getSyskitConfig(repoRoot) {
   const configPath = join(repoRoot || getRepoRoot(), '.Systematize/config/syskit-config.yml');
-  if (!existsSync(configPath)) return null;
-  const content = readFileSync(configPath, 'utf8');
-  const config = {};
-  for (const line of content.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const match = trimmed.match(/^([^:]+):\s*(.*)$/);
-    if (match) {
-      let [, key, val] = match;
-      key = key.trim();
-      val = val.trim().replace(/^["']|["']$/g, '');
-      if (val === 'true') val = true;
-      else if (val === 'false') val = false;
-      else if (val === 'null') val = null;
-      else if (/^\d+$/.test(val)) val = parseInt(val, 10);
-      config[key] = val;
-    }
-  }
-  return config;
+  return readFlatYamlFile(configPath);
 }
 
 export function readFileOrEmpty(filePath) {

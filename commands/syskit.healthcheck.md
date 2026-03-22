@@ -1,5 +1,11 @@
 ---
 description: Run a quick health check on feature documentation — verifies consistency, completeness, and traceability without deep analysis.
+command_name: healthcheck
+command_family: Inspection
+command_stage: inspection
+command_requirement_level: mandatory
+command_execution_mode: runtime-backed
+runtime_command: healthcheck
 handoffs:
   - label: Full Analysis
     agent: syskit.analyze

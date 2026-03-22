@@ -16,6 +16,13 @@ if ($Help) {
 
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($Branch) { $nodeArgs += @('--branch', $Branch) }
+if ($Severity) { $nodeArgs += @('--severity', $Severity) }
+if ($Json) { $nodeArgs += '--json' }
+Invoke-NodeSyskitCommand -CommandName 'check-alerts' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 $env_ = Get-FeaturePathsEnv
 $repoRoot = $env_.REPO_ROOT
 $branchName = if ($Branch) { $Branch } else { $env_.CURRENT_BRANCH }

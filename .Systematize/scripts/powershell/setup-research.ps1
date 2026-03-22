@@ -22,6 +22,12 @@ if ($Help) {
 # Load common functions
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($Branch) { $nodeArgs += @('--branch', $Branch) }
+if ($Json) { $nodeArgs += '--json' }
+Invoke-NodeSyskitCommand -CommandName 'setup-research' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 # Get all paths and variables from common functions
 $paths = Get-FeaturePathsEnv -Mutating -EnsureExists
 $repoRoot = $paths.REPO_ROOT
@@ -79,6 +85,7 @@ if ($Json) {
     $result = [PSCustomObject]@{
         FEATURE_SYS = $paths.FEATURE_SYS
         RESEARCH = $paths.RESEARCH
+        FEATURES_DIR = $paths.FEATURE_DIR
         AMINOOOF_DIR = $paths.FEATURE_DIR
         BRANCH = $paths.CURRENT_BRANCH
         HAS_GIT = $paths.HAS_GIT
@@ -87,6 +94,7 @@ if ($Json) {
 } else {
     Write-Output "FEATURE_SYS: $($paths.FEATURE_SYS)"
     Write-Output "RESEARCH: $($paths.RESEARCH)"
+    Write-Output "FEATURES_DIR: $($paths.FEATURE_DIR)"
     Write-Output "AMINOOOF_DIR: $($paths.FEATURE_DIR)"
     Write-Output "BRANCH: $($paths.CURRENT_BRANCH)"
     Write-Output "HAS_GIT: $($paths.HAS_GIT)"

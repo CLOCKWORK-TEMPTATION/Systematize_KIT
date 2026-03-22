@@ -1,5 +1,11 @@
 ---
-description: Interactive tutorial that explains the Systematize KIT workflow and guides users to their next step based on current project state.
+description: Interactive tutorial that explains the Systematize Framework workflow and guides users to their next step based on current project state.
+command_name: guide
+command_family: Admin
+command_stage: onboarding
+command_requirement_level: optional
+command_execution_mode: llm-only
+runtime_command: null
 ---
 
 ## User Input
@@ -12,7 +18,7 @@ $ARGUMENTS
 
 1. **Determine user level** from `$ARGUMENTS`:
    - If specified (beginner/intermediate/advanced), use that
-   - Otherwise, ask: "What's your experience level with Systematize KIT?"
+   - Otherwise, ask: "What's your experience level with Systematize Framework?"
 
 2. **Show system overview** based on level:
 

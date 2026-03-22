@@ -1,5 +1,11 @@
 ---
 description: Fast-track for small projects — combines systematize and clarify in one streamlined pass, then hands off to the mandatory workflow gates.
+command_name: quickstart
+command_family: Admin
+command_stage: onboarding
+command_requirement_level: optional
+command_execution_mode: llm-only
+runtime_command: null
 ---
 
 ## User Input

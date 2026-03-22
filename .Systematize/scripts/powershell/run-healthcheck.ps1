@@ -22,6 +22,13 @@ if ($Help) {
 
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($Branch) { $nodeArgs += @('--branch', $Branch) }
+if ($Threshold) { $nodeArgs += @('--threshold', $Threshold) }
+if ($Json) { $nodeArgs += '--json' }
+Invoke-NodeSyskitCommand -CommandName 'healthcheck' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 $env_ = Get-FeaturePathsEnv
 $repoRoot = $env_.REPO_ROOT
 if ($Branch) {

@@ -1,5 +1,11 @@
 ---
-description: Bootstrap a repository with Systematize KIT assets, templates, scripts, commands, and platform-specific guidance files before any feature workflow starts.
+description: Bootstrap a repository with Systematize Framework assets, templates, scripts, commands, and platform-specific guidance files before any feature workflow starts.
+command_name: init
+command_family: Admin
+command_stage: bootstrap
+command_requirement_level: mandatory
+command_execution_mode: runtime-backed
+runtime_command: init
 ---
 
 ## User Input

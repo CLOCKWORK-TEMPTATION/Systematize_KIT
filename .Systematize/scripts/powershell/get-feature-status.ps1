@@ -15,6 +15,12 @@ if ($Help) {
 
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($Branch) { $nodeArgs += @('--branch', $Branch) }
+if ($Json) { $nodeArgs += '--json' }
+Invoke-NodeSyskitCommand -CommandName 'feature-status' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 $env_ = Get-FeaturePathsEnv
 $repoRoot = $env_.REPO_ROOT
 if ($Branch) {

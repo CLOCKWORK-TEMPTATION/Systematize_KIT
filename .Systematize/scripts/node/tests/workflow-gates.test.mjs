@@ -5,11 +5,13 @@ import { mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hasPowerShell } from './helpers/powershell.mjs';
 
 import { getFeatureWorkspaceRoot } from '../lib/common.mjs';
 
 const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url));
 const legacyWorkspaceName = Buffer.from('c3BlY3M=', 'base64').toString('utf8');
+const powerShellAvailable = hasPowerShell();
 
 function createTempRepo() {
   const tempRepo = join(tmpdir(), `syskit-workflow-${Date.now()}-${Math.random().toString(16).slice(2)}`);
@@ -96,7 +98,7 @@ test('detects conflicting workflow roots and forces manual resolution', () => {
   const tempRepo = createTempRepo();
 
   try {
-    mkdirSync(join(tempRepo, 'aminooof'), { recursive: true });
+    mkdirSync(join(tempRepo, 'features'), { recursive: true });
     mkdirSync(join(tempRepo, legacyWorkspaceName), { recursive: true });
 
     assert.throws(
@@ -108,7 +110,7 @@ test('detects conflicting workflow roots and forces manual resolution', () => {
   }
 });
 
-test('setup-plan migrates the legacy workflow root and writes into aminooof', () => {
+test('setup-plan migrates the legacy workflow root and writes into features', () => {
   const tempRepo = createTempRepo();
   const branchName = '001-demo-flow';
   const legacyFeatureDir = join(tempRepo, legacyWorkspaceName, branchName);
@@ -126,8 +128,9 @@ test('setup-plan migrates the legacy workflow root and writes into aminooof', ()
     );
 
     const result = JSON.parse(output);
-    const migratedFeatureDir = join(tempRepo, 'aminooof', branchName);
+    const migratedFeatureDir = join(tempRepo, 'features', branchName);
 
+    assert.equal(result.FEATURES_DIR, migratedFeatureDir);
     assert.equal(result.AMINOOOF_DIR, migratedFeatureDir);
     assert.equal(existsSync(migratedFeatureDir), true);
     assert.equal(existsSync(legacyFeatureDir), false);
@@ -137,7 +140,7 @@ test('setup-plan migrates the legacy workflow root and writes into aminooof', ()
   }
 });
 
-test('powershell setup-plan migrates the legacy workflow root and writes into aminooof', () => {
+test('powershell setup-plan migrates the legacy workflow root and writes into features', { skip: !powerShellAvailable }, () => {
   const tempRepo = createTempRepo();
   const branchName = '001-demo-flow';
   const legacyFeatureDir = join(tempRepo, legacyWorkspaceName, branchName);
@@ -155,8 +158,9 @@ test('powershell setup-plan migrates the legacy workflow root and writes into am
     );
 
     const result = JSON.parse(output);
-    const migratedFeatureDir = join(tempRepo, 'aminooof', branchName);
+    const migratedFeatureDir = join(tempRepo, 'features', branchName);
 
+    assert.equal(result.FEATURES_DIR, migratedFeatureDir);
     assert.equal(result.AMINOOOF_DIR, migratedFeatureDir);
     assert.equal(existsSync(migratedFeatureDir), true);
     assert.equal(existsSync(legacyFeatureDir), false);
@@ -169,7 +173,7 @@ test('powershell setup-plan migrates the legacy workflow root and writes into am
 test('setup-plan blocks until constitution and research gates are complete', () => {
   const tempRepo = createTempRepo();
   const branchName = '001-demo-flow';
-  const featureDir = join(tempRepo, 'aminooof', branchName);
+  const featureDir = join(tempRepo, 'features', branchName);
 
   try {
     mkdirSync(featureDir, { recursive: true });
@@ -198,7 +202,7 @@ test('setup-plan blocks until constitution and research gates are complete', () 
 test('feature-status enforces constitution then research then plan as the next step order', () => {
   const tempRepo = createTempRepo();
   const branchName = '001-demo-flow';
-  const featureDir = join(tempRepo, 'aminooof', branchName);
+  const featureDir = join(tempRepo, 'features', branchName);
 
   try {
     mkdirSync(featureDir, { recursive: true });
@@ -231,10 +235,10 @@ test('feature-status enforces constitution then research then plan as the next s
   }
 });
 
-test('powershell feature-status enforces constitution then research then plan as the next step order', () => {
+test('powershell feature-status enforces constitution then research then plan as the next step order', { skip: !powerShellAvailable }, () => {
   const tempRepo = createTempRepo();
   const branchName = '001-demo-flow';
-  const featureDir = join(tempRepo, 'aminooof', branchName);
+  const featureDir = join(tempRepo, 'features', branchName);
 
   try {
     mkdirSync(featureDir, { recursive: true });

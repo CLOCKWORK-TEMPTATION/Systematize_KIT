@@ -56,6 +56,14 @@ EXAMPLES:
 # Source common functions
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($Json) { $nodeArgs += '--json' }
+if ($RequireTasks) { $nodeArgs += '--require-tasks' }
+if ($IncludeTasks) { $nodeArgs += '--include-tasks' }
+if ($PathsOnly) { $nodeArgs += '--paths-only' }
+Invoke-NodeSyskitCommand -CommandName 'check-prerequisites' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 # Get feature paths and validate branch
 $paths = Get-FeaturePathsEnv
 

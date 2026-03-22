@@ -1,5 +1,11 @@
 ---
 description: Generate a custom checklist for the current feature based on user requirements.
+command_name: checklist
+command_family: Gate
+command_stage: phase-07
+command_requirement_level: conditional
+command_execution_mode: llm-only
+runtime_command: null
 handoffs:
   - label: Analyze For Consistency
     agent: syskit.analyze

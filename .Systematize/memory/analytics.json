@@ -297,6 +297,34 @@
           "command": "init",
           "status": "completed",
           "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-22T17:17:50.609Z",
+          "command": "list-extensions",
+          "status": "completed",
+          "has_git": false
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-22T17:19:17.229Z",
+          "command": "build-distribution",
+          "status": "error",
+          "message": "spawnSync npm.cmd EINVAL"
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-22T17:19:35.191Z",
+          "command": "build-distribution",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-22T17:20:04.536Z",
+          "command": "list-extensions",
+          "status": "completed",
+          "has_git": true
         }
       ],
       "phases": {}

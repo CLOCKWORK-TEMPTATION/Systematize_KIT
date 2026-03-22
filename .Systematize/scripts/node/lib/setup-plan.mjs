@@ -86,6 +86,7 @@ export default async function main(argv) {
   const result = {
     FEATURE_SYS: featurePaths.FEATURE_SYS,
     IMPL_PLAN: featurePaths.IMPL_PLAN,
+    FEATURES_DIR: featurePaths.FEATURE_DIR,
     AMINOOOF_DIR: featurePaths.FEATURE_DIR,
     BRANCH: featurePaths.CURRENT_BRANCH,
     HAS_GIT: featurePaths.HAS_GIT
@@ -96,6 +97,7 @@ export default async function main(argv) {
   } else {
     console.log(`FEATURE_SYS: ${result.FEATURE_SYS}`);
     console.log(`IMPL_PLAN: ${result.IMPL_PLAN}`);
+    console.log(`FEATURES_DIR: ${result.FEATURES_DIR}`);
     console.log(`AMINOOOF_DIR: ${result.AMINOOOF_DIR}`);
     console.log(`BRANCH: ${result.BRANCH}`);
     console.log(`HAS_GIT: ${result.HAS_GIT}`);

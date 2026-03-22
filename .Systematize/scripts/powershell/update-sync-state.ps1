@@ -22,6 +22,13 @@ if ($Help) {
 
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($Branch) { $nodeArgs += @('--branch', $Branch) }
+if ($Force) { $nodeArgs += '--force' }
+if ($Json) { $nodeArgs += '--json' }
+Invoke-NodeSyskitCommand -CommandName 'update-sync-state' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 $env_ = Get-FeaturePathsEnv
 $repoRoot = $env_.REPO_ROOT
 if ($Branch) {

@@ -1,5 +1,11 @@
 ---
 description: Run the clarification phase — resolve ambiguity in the feature sys using targeted questions, document assumptions, produce a mandatory Clarification Contract, and verify readiness for planning.
+command_name: clarify
+command_family: Gate
+command_stage: phase-02
+command_requirement_level: mandatory
+command_execution_mode: llm-only
+runtime_command: null
 handoffs: 
   - label: Generate Constitution
     agent: syskit.constitution

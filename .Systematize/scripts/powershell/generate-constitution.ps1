@@ -64,6 +64,18 @@ OUTPUT:
 # Load common functions (includes Resolve-Template)
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($ProjectName) { $nodeArgs += @('--project-name', $ProjectName) }
+if ($Version) { $nodeArgs += @('--version', $Version) }
+if ($Owner) { $nodeArgs += @('--owner', $Owner) }
+if ($ProductManager) { $nodeArgs += @('--pm', $ProductManager) }
+if ($TechLead) { $nodeArgs += @('--tech-lead', $TechLead) }
+if ($Description) { $nodeArgs += @('--description', $Description) }
+if ($Force) { $nodeArgs += '--force' }
+if ($Json) { $nodeArgs += '--json' }
+Invoke-NodeSyskitCommand -CommandName 'generate-constitution' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 # Resolve repository root
 $repoRoot = Get-RepoRoot
 

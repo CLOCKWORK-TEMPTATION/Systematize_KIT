@@ -1,12 +1,14 @@
 {
-  "name": "systematize-kit",
+  "name": "systematize-framework-workspace",
   "private": true,
+  "description": "Workspace verification and governance docs tooling for the Systematize Framework",
   "scripts": {
     "test": "node --test .Systematize/scripts/node/tests/*.test.mjs",
+    "sync:commands": "node .Systematize/scripts/node/lib/sync-command-metadata.mjs",
+    "generate:docs": "npm run sync:commands && node .Systematize/scripts/node/lib/generate-command-runtime-map.mjs && node .Systematize/scripts/node/lib/generate-project-tree.mjs",
+    "verify:docs": "node .Systematize/scripts/node/lib/sync-command-metadata.mjs --check && node .Systematize/scripts/node/lib/generate-command-runtime-map.mjs --check && node .Systematize/scripts/node/lib/generate-project-tree.mjs --check",
     "verify:contracts": "node .Systematize/scripts/node/tests/verify-contracts.mjs",
-    "verify": "npm run test && npm run verify:contracts"
-  },
-  "dependencies": {
-    "docx": "^9.6.1"
+    "verify": "npm run test && npm run verify:docs && npm run verify:contracts",
+    "package:dist": "npm run generate:docs && node .Systematize/scripts/node/cli.mjs build-distribution"
   }
 }

@@ -23,7 +23,7 @@ description: "Task list template for feature implementation — atomic, traceabl
   ✅ "إنشاء مكون LoginForm.tsx يحتوي على حقول (email, password) مع validation باستخدام Zod ورسائل خطأ بالعربية"
 -->
 
-**Input**: Design documents from `/aminooof/[###-feature-name]/`
+**Input**: Design documents from `/features/[###-feature-name]/`
 **Prerequisites**: plan.md (required), sys.md (required for user stories), research.md, AGENTS.md, contracts/
 
 **Tests**: The examples below include test tasks. Tests are OPTIONAL — only include them if explicitly requested in the feature systematize document.

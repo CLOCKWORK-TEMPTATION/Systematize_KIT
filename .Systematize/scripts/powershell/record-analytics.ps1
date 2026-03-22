@@ -19,6 +19,14 @@ if ($Help) {
 
 . "$PSScriptRoot/common.ps1"
 
+$nodeArgs = @()
+if ($Branch) { $nodeArgs += @('--branch', $Branch) }
+if ($Event) { $nodeArgs += @('--event', $Event) }
+if ($Data -and $Data.Count -gt 0) { $nodeArgs += @('--data', ($Data | ConvertTo-Json -Compress -Depth 10)) }
+if ($Json) { $nodeArgs += '--json' }
+Invoke-NodeSyskitCommand -CommandName 'record-analytics' -NodeArgs $nodeArgs
+exit $LASTEXITCODE
+
 function Get-EmptyAnalyticsState {
     return @{
         schema_version = 1

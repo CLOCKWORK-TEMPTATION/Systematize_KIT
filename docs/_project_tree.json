@@ -1,10 +1,12 @@
 {
-  "project": "Systematize_KIT",
-  "generated_at": "2026-03-18",
+  "project": "Systematize Framework for Software Project Governance",
+  "generated_by": ".Systematize/scripts/node/lib/generate-project-tree.mjs",
   "root": {
     "files": [
-      "CLAUDE.md",
-      "systematize-kit-v2-expansion-b73080.md"
+      "README.md",
+      "package.json",
+      "package-lock.json",
+      "install-syskit.ps1"
     ],
     "directories": {
       "commands": [
@@ -18,6 +20,7 @@
         "syskit.guide.md",
         "syskit.healthcheck.md",
         "syskit.implement.md",
+        "syskit.init.md",
         "syskit.metrics.md",
         "syskit.plan.md",
         "syskit.quickstart.md",
@@ -30,56 +33,242 @@
         "syskit.taskstoissues.md"
       ],
       ".Systematize": {
-        "config": [
-          "alerts.yml",
-          "extensions.yml",
-          "syskit-config.yml"
-        ],
-        "memory": [
-          "constitution.md",
-          "sync-state.json",
-          "analytics.json"
-        ],
-        "scripts": {
-          "powershell": [
-            "auto-commit.ps1",
-            "check-alerts.ps1",
-            "check-prerequisites.ps1",
-            "common.ps1",
-            "create-new-feature.ps1",
-            "export-dashboard.ps1",
-            "generate-constitution.ps1",
-            "generate-pr.ps1",
-            "get-feature-status.ps1",
-            "record-analytics.ps1",
-            "run-healthcheck.ps1",
-            "setup-plan.ps1",
-            "setup-research.ps1",
-            "setup-tasks.ps1",
-            "snapshot-artifacts.ps1",
-            "update-agent-context.ps1",
-            "update-sync-state.ps1"
+        "files": [],
+        "directories": {
+          "config": [
+            "alerts.yml",
+            "command-catalog.json",
+            "extensions.yml",
+            "platform-catalog.json",
+            "syskit-config.yml"
           ],
-          "node": [
-            "cli.mjs",
-            "README.md",
-            "lib/*"
-          ]
-        },
-        "other_dirs": [
-          "templates",
-          "presets",
-          "extensions",
-          "snapshots",
-          "exports"
-        ]
+          "exports": [],
+          "extension-packages": {
+            "files": [
+              "README.md"
+            ],
+            "directories": {
+              "alerts": [
+                "extension.json",
+                "README.md"
+              ],
+              "analytics": [
+                "extension.json",
+                "README.md"
+              ],
+              "export": [
+                "extension.json",
+                "README.md"
+              ],
+              "taskstoissues": [
+                "extension.json",
+                "README.md"
+              ]
+            }
+          },
+          "extensions": {
+            "files": [
+              "README.md"
+            ],
+            "directories": {
+              "alerts": [
+                "extension.json",
+                "README.md"
+              ],
+              "analytics": [
+                "extension.json",
+                "README.md"
+              ],
+              "commands": [],
+              "export": [
+                "extension.json",
+                "README.md"
+              ],
+              "templates": []
+            }
+          },
+          "memory": [
+            "analytics.json",
+            "constitution.md",
+            "sync-state.json"
+          ],
+          "presets": {
+            "files": [],
+            "directories": {
+              "api-service": {
+                "files": [],
+                "directories": {
+                  "templates": [
+                    "plan-template.md",
+                    "sys-template.md"
+                  ]
+                }
+              },
+              "cli-tool": {
+                "files": [],
+                "directories": {
+                  "templates": [
+                    "sys-template.md"
+                  ]
+                }
+              },
+              "library": {
+                "files": [],
+                "directories": {
+                  "templates": [
+                    "sys-template.md"
+                  ]
+                }
+              },
+              "mobile-app": {
+                "files": [],
+                "directories": {
+                  "templates": [
+                    "plan-template.md",
+                    "sys-template.md"
+                  ]
+                }
+              },
+              "web-fullstack": {
+                "files": [],
+                "directories": {
+                  "templates": [
+                    "plan-template.md",
+                    "sys-template.md",
+                    "tasks-template.md"
+                  ]
+                }
+              }
+            }
+          },
+          "scripts": {
+            "files": [],
+            "directories": {
+              "node": {
+                "files": [
+                  "cli.mjs",
+                  "package.json",
+                  "README.md"
+                ],
+                "directories": {
+                  "lib": [
+                    "auto-commit.mjs",
+                    "build-distribution.mjs",
+                    "check-alerts.mjs",
+                    "check-prerequisites.mjs",
+                    "common.mjs",
+                    "config-parser.mjs",
+                    "configuration.mjs",
+                    "create-feature.mjs",
+                    "export-dashboard.mjs",
+                    "generate-command-runtime-map.mjs",
+                    "generate-constitution.mjs",
+                    "generate-pr.mjs",
+                    "generate-project-tree.mjs",
+                    "get-feature-status.mjs",
+                    "health.mjs",
+                    "init-syskit-files.mjs",
+                    "init-syskit-platform-bundles.mjs",
+                    "init-syskit-platform-prompts.mjs",
+                    "init-syskit-platforms.mjs",
+                    "init-syskit-render.mjs",
+                    "init-syskit-state.mjs",
+                    "init-syskit.mjs",
+                    "install-extension.mjs",
+                    "list-extensions.mjs",
+                    "record-analytics.mjs",
+                    "remove-extension.mjs",
+                    "run-healthcheck.mjs",
+                    "setup-plan.mjs",
+                    "setup-research.mjs",
+                    "setup-tasks.mjs",
+                    "snapshot-artifacts.mjs",
+                    "sync-command-metadata.mjs",
+                    "update-agent-context.mjs",
+                    "update-sync-state.mjs"
+                  ],
+                  "tests": {
+                    "files": [
+                      "configuration.test.mjs",
+                      "extensions.test.mjs",
+                      "health.test.mjs",
+                      "init-syskit.test.mjs",
+                      "optional-capabilities.test.mjs",
+                      "smoke.test.mjs",
+                      "verify-contracts.mjs",
+                      "workflow-gates.test.mjs"
+                    ],
+                    "directories": {
+                      "helpers": [
+                        "powershell.mjs"
+                      ]
+                    }
+                  }
+                }
+              },
+              "powershell": [
+                "auto-commit.ps1",
+                "check-alerts.ps1",
+                "check-prerequisites.ps1",
+                "common-health.ps1",
+                "common-support.ps1",
+                "common-workflow.ps1",
+                "common.ps1",
+                "create-new-feature.ps1",
+                "export-dashboard.ps1",
+                "generate-constitution.ps1",
+                "generate-pr.ps1",
+                "get-feature-status.ps1",
+                "init-syskit.ps1",
+                "record-analytics.ps1",
+                "run-healthcheck.ps1",
+                "setup-plan.ps1",
+                "setup-research.ps1",
+                "setup-tasks.ps1",
+                "snapshot-artifacts.ps1",
+                "update-agent-context.ps1",
+                "update-sync-state.ps1"
+              ]
+            }
+          },
+          "snapshots": [],
+          "templates": {
+            "files": [
+              "agent-file-template.md",
+              "checklist-template.md",
+              "constitution-template.md",
+              "plan-template.md",
+              "pr-template.md",
+              "research-template.md",
+              "review-template.md",
+              "sys-template.md",
+              "tasks-template.md"
+            ],
+            "directories": {
+              "overrides": []
+            }
+          }
+        }
       },
-      "docs": [
-        "PROGRESS.md",
-        "CORE_MECHANISM.md",
-        "FILE_RELATIONS.md",
-        "_project_tree.json"
-      ]
+      "docs": {
+        "files": [
+          "_project_tree.json",
+          "ARCHITECTURE.md",
+          "COMMAND_RUNTIME_MAP.md",
+          "DISTRIBUTION.md",
+          "OPTIONAL_CAPABILITIES.md",
+          "PACKAGE_BOUNDARY.md"
+        ],
+        "directories": {
+          "policies": [
+            "analyze-policy.md",
+            "README.md",
+            "research-policy.md",
+            "systematize-policy.md",
+            "tasks-policy.md"
+          ]
+        }
+      }
     }
   }
 }
