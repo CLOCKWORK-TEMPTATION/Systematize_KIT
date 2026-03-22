@@ -9,7 +9,23 @@ const outputPath = join(repoRoot, 'docs', '_project_tree.json');
 const includeRootFiles = ['README.md', 'package.json', 'package-lock.json', 'install-syskit.ps1'];
 const includeDirectories = ['commands', '.Systematize', 'docs'];
 const excludeDirectories = new Set(['.git', 'node_modules']);
+const excludeRelativeDirectories = new Set([
+  '.Systematize/exports',
+  '.Systematize/snapshots'
+]);
 const includeExtensionlessFiles = new Set(['pre-commit']);
+
+function normalizeRelativePath(relativePath) {
+  return relativePath.replace(/\\/g, '/');
+}
+
+function detectLineEnding(content) {
+  return content.includes('\r\n') ? '\r\n' : '\n';
+}
+
+function applyLineEnding(content, lineEnding) {
+  return content.replace(/\n/g, lineEnding);
+}
 
 function sortEntries(entries) {
   return [...entries].sort((left, right) => left.localeCompare(right, 'en'));
@@ -27,6 +43,7 @@ function buildDirectoryTree(relativeDir) {
 
     if (stats.isDirectory()) {
       if (excludeDirectories.has(entry)) continue;
+      if (excludeRelativeDirectories.has(normalizeRelativePath(relativePath))) continue;
       directories[entry] = buildDirectoryTree(relativePath);
       continue;
     }
@@ -62,11 +79,12 @@ function buildTree() {
   };
 }
 
-const expected = JSON.stringify(buildTree(), null, 2);
 const shouldCheck = process.argv.includes('--check');
+const current = existsSync(outputPath) ? readFileSync(outputPath, 'utf8') : '';
+const lineEnding = detectLineEnding(current);
+const expected = applyLineEnding(JSON.stringify(buildTree(), null, 2), lineEnding);
 
 if (shouldCheck) {
-  const current = existsSync(outputPath) ? readFileSync(outputPath, 'utf8') : '';
   if (current.trimEnd() !== expected.trimEnd()) {
     console.error(`Generated project tree is out of date: ${outputPath}`);
     process.exit(1);
@@ -74,6 +92,6 @@ if (shouldCheck) {
 
   console.log('Project tree is up to date.');
 } else {
-  writeFileSync(outputPath, `${expected}\n`, 'utf8');
+  writeFileSync(outputPath, `${expected}${lineEnding}`, 'utf8');
   console.log(`Generated ${outputPath}`);
 }

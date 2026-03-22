@@ -14,6 +14,10 @@ function read(relativePath) {
   return readFileSync(join(repoRoot, relativePath), 'utf8');
 }
 
+function detectLineEnding(content) {
+  return content.includes('\r\n') ? '\r\n' : '\n';
+}
+
 function buildMetadataLines(command) {
   return [
     `command_name: ${command.name}`,
@@ -27,6 +31,7 @@ function buildMetadataLines(command) {
 
 function syncCommandFrontmatter(relativePath, metadataLines) {
   const content = read(relativePath);
+  const lineEnding = detectLineEnding(content);
   const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!frontmatterMatch) {
     throw new Error(`Missing frontmatter in ${relativePath}`);
@@ -50,7 +55,7 @@ function syncCommandFrontmatter(relativePath, metadataLines) {
   const insertAt = descriptionIndex >= 0 ? descriptionIndex + 1 : 0;
   filteredLines.splice(insertAt, 0, ...metadataLines);
 
-  const nextFrontmatter = `---\n${filteredLines.join('\n')}\n---`;
+  const nextFrontmatter = `---${lineEnding}${filteredLines.join(lineEnding)}${lineEnding}---`;
   const nextContent = content.replace(frontmatterMatch[0], nextFrontmatter);
   const changed = nextContent !== content;
 

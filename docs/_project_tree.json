@@ -43,7 +43,6 @@
             "platform-catalog.json",
             "syskit-config.yml"
           ],
-          "exports": [],
           "extension-packages": {
             "files": [
               "README.md"
@@ -237,7 +236,6 @@
               ]
             }
           },
-          "snapshots": [],
           "templates": {
             "files": [
               "agent-file-template.md",
