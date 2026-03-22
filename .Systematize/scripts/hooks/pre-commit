@@ -1,5 +1,5 @@
 #!/bin/sh
 set -eu
 
-printf '%s\n' 'Systematize Framework pre-commit: verifying generated documentation synchronization...'
-npm run verify:docs
+printf '%s\n' 'Systematize Framework pre-commit: running full verification chain...'
+npm run verify

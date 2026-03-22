@@ -214,7 +214,8 @@ function Get-FeatureHealthReport {
         score = $script:__syskitHealthScore
         maxScore = 100
         threshold = $Threshold
-        status = if ($script:__syskitHealthScore -ge $Threshold) { 'HEALTHY' } else { 'UNHEALTHY' }
+        status = if ($script:__syskitHealthScore -ge $Threshold) { 'ADVISORY_PASS' } else { 'ADVISORY_FAIL' }
+        scope = 'heuristic'
         checks = @($script:__syskitHealthChecks)
     }
 }

@@ -104,9 +104,10 @@ function Write-HealthScore {
         [int]$MaxScore = 100,
         [int]$Threshold = 70
     )
-    $status = if ($Score -ge $Threshold) { "HEALTHY ✅" } else { "UNHEALTHY ❌" }
-    Write-Host "🏥 Health Score: $Score/$MaxScore"
-    Write-Host "Status: $status (threshold: $Threshold)"
+    $status = if ($Score -ge $Threshold) { "ADVISORY_PASS ✅" } else { "ADVISORY_FAIL ❌" }
+    Write-Host "🏥 Advisory Health Score: $Score/$MaxScore (heuristic)"
+    Write-Host "Advisory Status: $status (threshold: $Threshold)"
+    Write-Host "Note: This is a heuristic quick-check. For authoritative verification use: npm run verify"
 }
 
 function Test-IDSequence {

@@ -84,7 +84,7 @@ npm run setup:hooks
 ويشغّل:
 
 ```text
-npm run verify:docs
+npm run verify
 ```
 
 قبل السماح بأي
