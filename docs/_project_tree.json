@@ -38,6 +38,7 @@
           "config": [
             "alerts.yml",
             "command-catalog.json",
+            "distribution-manifest.json",
             "extensions.yml",
             "platform-catalog.json",
             "syskit-config.yml"
@@ -190,6 +191,7 @@
                   "tests": {
                     "files": [
                       "configuration.test.mjs",
+                      "delivery-contracts.test.mjs",
                       "extensions.test.mjs",
                       "health.test.mjs",
                       "init-syskit.test.mjs",

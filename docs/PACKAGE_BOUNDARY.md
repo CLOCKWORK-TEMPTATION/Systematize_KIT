@@ -12,7 +12,7 @@
 الموقع:
 
 ```text
-C:\Users\Mohmed Aimen Raed\Systematize_KIT\package.json
+package.json
 ```
 
 المسؤولية:
@@ -27,7 +27,7 @@ C:\Users\Mohmed Aimen Raed\Systematize_KIT\package.json
 الموقع:
 
 ```text
-C:\Users\Mohmed Aimen Raed\Systematize_KIT\.Systematize\scripts\node\package.json
+.Systematize/scripts/node/package.json
 ```
 
 المسؤولية:

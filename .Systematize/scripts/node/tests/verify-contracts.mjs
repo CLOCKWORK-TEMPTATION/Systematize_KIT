@@ -93,9 +93,6 @@ check(cliContent.includes('custom_command_used'), 'Node CLI no longer records cu
 const nodeAlertsContent = read('.Systematize/scripts/node/lib/check-alerts.mjs');
 check(nodeAlertsContent.includes('getAlertsConfig'), 'Node alert checks no longer consume alerts.yml');
 
-const psAlertsContent = read('.Systematize/scripts/powershell/check-alerts.ps1');
-check(psAlertsContent.includes('Get-AlertsConfig'), 'PowerShell alert checks no longer consume alerts.yml');
-
 const powerShellWrapperFiles = [
   '.Systematize/scripts/powershell/auto-commit.ps1',
   '.Systematize/scripts/powershell/check-alerts.ps1',
@@ -202,10 +199,6 @@ const quickstartContent = read('commands/syskit.quickstart.md');
 check(!quickstartContent.includes('Generate `plan.md`'), 'Quickstart still generates plan.md');
 check(quickstartContent.includes('/syskit.constitution'), 'Quickstart no longer hands off to /syskit.constitution');
 check(quickstartContent.includes('/syskit.research'), 'Quickstart no longer hands off to /syskit.research');
-
-const recordAnalyticsPsContent = read('.Systematize/scripts/powershell/record-analytics.ps1');
-check(recordAnalyticsPsContent.includes('custom_command_used'), 'PowerShell analytics script no longer supports custom command tracking');
-check(recordAnalyticsPsContent.includes('hook_executed'), 'PowerShell analytics script no longer supports hook tracking');
 
 check(
   existsSync(join(repoRoot, '.Systematize', 'templates', 'overrides', '.gitkeep')),

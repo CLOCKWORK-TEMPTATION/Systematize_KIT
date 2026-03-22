@@ -9,6 +9,6 @@
     "verify:docs": "node .Systematize/scripts/node/lib/sync-command-metadata.mjs --check && node .Systematize/scripts/node/lib/generate-command-runtime-map.mjs --check && node .Systematize/scripts/node/lib/generate-project-tree.mjs --check",
     "verify:contracts": "node .Systematize/scripts/node/tests/verify-contracts.mjs",
     "verify": "npm run test && npm run verify:docs && npm run verify:contracts",
-    "package:dist": "npm run generate:docs && node .Systematize/scripts/node/cli.mjs build-distribution"
+    "package:dist": "node .Systematize/scripts/node/cli.mjs build-distribution"
   }
 }

@@ -1,30 +1,101 @@
-import { execSync } from 'node:child_process';
-import { cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { execSync, spawnSync } from 'node:child_process';
+import { cpSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { ensureDir, getRepoRoot, parseArgs } from './common.mjs';
 import { getAvailableExtensionPackages } from './configuration.mjs';
 
-const DIST_INCLUDE_PATHS = [
-  'README.md',
-  'commands',
-  'docs',
-  join('.Systematize', 'config'),
-  join('.Systematize', 'extension-packages'),
-  join('.Systematize', 'templates'),
-  join('.Systematize', 'scripts'),
-  join('.Systematize', 'presets'),
-  join('.Systematize', 'extensions', 'README.md'),
-  join('.Systematize', 'extensions', 'commands', '.gitkeep'),
-  join('.Systematize', 'extensions', 'templates', '.gitkeep')
-];
+const DISTRIBUTION_CONTRACT_PATH = join('.Systematize', 'config', 'distribution-manifest.json');
+
+function loadDistributionContract(repoRoot) {
+  const contractPath = join(repoRoot, DISTRIBUTION_CONTRACT_PATH);
+  if (!existsSync(contractPath)) {
+    throw new Error(`Missing distribution contract: ${DISTRIBUTION_CONTRACT_PATH}`);
+  }
+
+  const contract = JSON.parse(readFileSync(contractPath, 'utf8'));
+  if (!contract.bundle_root || !Array.isArray(contract.include_paths) || contract.include_paths.length === 0) {
+    throw new Error(`Invalid distribution contract: ${DISTRIBUTION_CONTRACT_PATH}`);
+  }
+
+  if (!Array.isArray(contract.prebuild_generators) || contract.prebuild_generators.length === 0) {
+    throw new Error(`Distribution contract is missing prebuild generators: ${DISTRIBUTION_CONTRACT_PATH}`);
+  }
+
+  if (!Array.isArray(contract.generated_stage_files) || contract.generated_stage_files.length === 0) {
+    throw new Error(`Distribution contract is missing generated stage files: ${DISTRIBUTION_CONTRACT_PATH}`);
+  }
+
+  return contract;
+}
+
+function runNodeScript(repoRoot, scriptRelativePath, options = {}) {
+  const scriptPath = join(repoRoot, scriptRelativePath);
+  if (!existsSync(scriptPath)) {
+    throw new Error(`Prebuild generator is missing: ${scriptRelativePath}`);
+  }
+
+  const result = spawnSync(process.execPath, [scriptPath], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    stdio: 'pipe'
+  });
+
+  if (!options.quiet) {
+    if (result.stdout) process.stdout.write(result.stdout);
+    if (result.stderr) process.stderr.write(result.stderr);
+  }
+
+  if (result.status !== 0) {
+    const details = [result.stderr, result.stdout].filter(Boolean).join('\n').trim();
+    throw new Error(`Failed to run ${scriptRelativePath}${details ? `\n${details}` : ''}`);
+  }
+}
+
+function runPrebuildGenerators(repoRoot, contract, options = {}) {
+  for (const scriptRelativePath of contract.prebuild_generators) {
+    runNodeScript(repoRoot, scriptRelativePath, options);
+  }
+}
 
 function copyIntoStage(sourceRoot, stageRoot, relativePath) {
   const sourcePath = join(sourceRoot, relativePath);
-  if (!existsSync(sourcePath)) return;
+  if (!existsSync(sourcePath)) {
+    throw new Error(`Distribution contract path is missing from the repository: ${relativePath}`);
+  }
 
   const targetPath = join(stageRoot, relativePath);
   ensureDir(dirname(targetPath));
   cpSync(sourcePath, targetPath, { recursive: true, force: true });
+}
+
+function removeManagedDistributionOutputs(distRoot, bundleRoot, runtimePackageName) {
+  ensureDir(distRoot);
+  rmSync(join(distRoot, bundleRoot), { recursive: true, force: true });
+
+  const tarballPrefix = `${runtimePackageName}-`;
+  for (const entry of readdirSync(distRoot, { withFileTypes: true })) {
+    if (!entry.isFile()) continue;
+    if (!entry.name.startsWith(tarballPrefix) || !entry.name.endsWith('.tgz')) continue;
+    rmSync(join(distRoot, entry.name), { force: true });
+  }
+}
+
+function verifyStageRoot(stageRoot, contract) {
+  const actualEntries = readdirSync(stageRoot, { withFileTypes: true }).map((entry) => entry.name);
+  const expectedEntries = new Set([
+    ...contract.include_paths.map((entry) => entry.split(/[\\/]/)[0]),
+    ...contract.generated_stage_files
+  ]);
+
+  const unexpectedEntries = actualEntries.filter((entry) => !expectedEntries.has(entry));
+  if (unexpectedEntries.length > 0) {
+    throw new Error(`Unexpected staged entries detected: ${unexpectedEntries.join(', ')}`);
+  }
+
+  const missingEntries = [...expectedEntries].filter((entry) => !actualEntries.includes(entry));
+  if (missingEntries.length > 0) {
+    throw new Error(`Missing staged entries declared by the distribution contract: ${missingEntries.join(', ')}`);
+  }
 }
 
 function writeInstallerFiles(stageRoot) {
@@ -98,15 +169,17 @@ OPTIONS:
   }
 
   const repoRoot = getRepoRoot();
+  const distributionContract = loadDistributionContract(repoRoot);
+  runPrebuildGenerators(repoRoot, distributionContract, { quiet: opts.json });
   const distRoot = resolve(opts.output || join(repoRoot, 'dist'));
-  const stageRoot = join(distRoot, 'systematize-framework');
+  const stageRoot = join(distRoot, distributionContract.bundle_root);
   const runtimePackageRoot = join(repoRoot, '.Systematize', 'scripts', 'node');
   const runtimePackageJson = JSON.parse(readFileSync(join(runtimePackageRoot, 'package.json'), 'utf8'));
-  rmSync(stageRoot, { recursive: true, force: true });
-  ensureDir(stageRoot);
+  removeManagedDistributionOutputs(distRoot, distributionContract.bundle_root, runtimePackageJson.name);
   ensureDir(distRoot);
+  ensureDir(stageRoot);
 
-  for (const relativePath of DIST_INCLUDE_PATHS) {
+  for (const relativePath of distributionContract.include_paths) {
     copyIntoStage(repoRoot, stageRoot, relativePath);
   }
 
@@ -119,15 +192,19 @@ OPTIONS:
   const tarballName = packedOutput.trim().split(/\r?\n/).pop();
 
   const manifest = {
-    schema_version: 1,
+    schema_version: distributionContract.schema_version,
     generated_at: new Date().toISOString(),
-    bundle_root: relative(repoRoot, stageRoot),
+    contract_source: DISTRIBUTION_CONTRACT_PATH,
+    bundle_root: distributionContract.bundle_root,
+    stage_relative_path: relative(repoRoot, stageRoot),
     runtime_package: {
       name: runtimePackageJson.name,
       version: runtimePackageJson.version,
       tarball: tarballName
     },
-    included_paths: DIST_INCLUDE_PATHS,
+    prebuild_generators: distributionContract.prebuild_generators,
+    included_paths: distributionContract.include_paths,
+    generated_stage_files: distributionContract.generated_stage_files,
     available_extensions: getAvailableExtensionPackages(repoRoot).map((item) => ({
       name: item.name,
       capability: item.capability || null,
@@ -136,6 +213,7 @@ OPTIONS:
   };
 
   writeFileSync(join(stageRoot, 'distribution-manifest.json'), JSON.stringify(manifest, null, 2), 'utf8');
+  verifyStageRoot(stageRoot, distributionContract);
 
   const result = {
     distRoot,
