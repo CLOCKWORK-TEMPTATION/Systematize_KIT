@@ -45,7 +45,6 @@ You **MUST** consider the user input before proceeding (if not empty).
 ## Outline
 
 1. **Setup**: Run the plan setup script from repo root and parse JSON for FEATURE_SYS, IMPL_PLAN, FEATURES_DIR, BRANCH.
-   - Legacy compatibility may still expose `AMINOOOF_DIR`, but new writing goes to `features/`.
    - **PowerShell**: `pwsh -File .Systematize/scripts/powershell/setup-plan.ps1 -Json`
    - **Node.js**: `node .Systematize/scripts/node/cli.mjs setup-plan --json`
    - For single quotes in args: use double-quote (e.g., `"I'm Groot"`)

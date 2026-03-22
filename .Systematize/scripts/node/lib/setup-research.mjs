@@ -79,7 +79,6 @@ export default async function main(argv) {
     FEATURE_SYS: featurePaths.FEATURE_SYS,
     RESEARCH: featurePaths.RESEARCH,
     FEATURES_DIR: featurePaths.FEATURE_DIR,
-    AMINOOOF_DIR: featurePaths.FEATURE_DIR,
     BRANCH: featurePaths.CURRENT_BRANCH,
     HAS_GIT: featurePaths.HAS_GIT
   };
@@ -90,7 +89,6 @@ export default async function main(argv) {
     console.log(`FEATURE_SYS: ${result.FEATURE_SYS}`);
     console.log(`RESEARCH: ${result.RESEARCH}`);
     console.log(`FEATURES_DIR: ${result.FEATURES_DIR}`);
-    console.log(`AMINOOOF_DIR: ${result.AMINOOOF_DIR}`);
     console.log(`BRANCH: ${result.BRANCH}`);
     console.log(`HAS_GIT: ${result.HAS_GIT}`);
   }

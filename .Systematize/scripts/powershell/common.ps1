@@ -309,7 +309,6 @@ function Get-FeaturePathsEnv {
         HAS_GIT       = $hasGit
         FEATURE_ROOT  = $featureRoot
         FEATURES_DIR  = $featureDir
-        AMINOOOF_DIR  = $featureDir
         FEATURE_DIR   = $featureDir
         FEATURE_SYS   = Join-Path $featureDir 'sys.md'
         IMPL_PLAN     = Join-Path $featureDir 'plan.md'
