@@ -1,4 +1,4 @@
-# Governance Policy Layer
+# طبقة السياسات الحاكمة
 
 > هذه وثيقة مرجعية.
 >
@@ -8,15 +8,15 @@
 > docs/START_HERE.md
 > ```
 
-This directory contains the extracted heavy governance policies that were previously embedded directly inside the command surface files.
+يحتوي هذا المجلد على السياسات الحاكمة الثقيلة التي استُخرجت من ملفات سطح الأوامر مباشرة.
 
-## Purpose
+## الغرض
 
-- Keep `commands/*.md` focused on orchestration and routing.
-- Keep stable, reusable policy and rubric text in a dedicated policy layer.
-- Make the separation between Governance DSL and Policy Layer explicit inside the repository.
+- إبقاء ملفات `commands/*.md` مركزة على التنسيق والتوجيه.
+- حفظ النصوص السياسية المستقرة والقابلة لإعادة الاستخدام في طبقة سياسات منفصلة.
+- جعل الفصل بين Governance DSL وطبقة السياسات صريحًا داخل المستودع.
 
-## Extracted Policies
+## السياسات المستخرجة
 
 - `docs/policies/systematize-policy.md`
 - `docs/policies/research-policy.md`
@@ -26,6 +26,6 @@ This directory contains the extracted heavy governance policies that were previo
 - `docs/policies/implement-policy.md`
 - `docs/policies/clarify-policy.md`
 
-## Operating Rule
+## القاعدة التشغيلية
 
-Each governance command must explicitly point to its extracted policy file and treat that policy as the normative source for the heavy rules, rubrics, and output contract.
+يجب أن يشير كل أمر حوكمة صراحة إلى ملف السياسة المستخرج الخاص به، وأن يعامل تلك السياسة باعتبارها المصدر المعياري للقواعد الثقيلة ومعايير التقييم وعقد المخرجات.

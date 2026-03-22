@@ -135,6 +135,9 @@ check(readmeContent.includes('docs/START_HERE.md'), 'Root README no longer point
 check(readmeContent.includes('/syskit.guide'), 'Root README no longer points to the official guidance entry');
 check(readmeContent.includes('docs/REFERENCE.md'), 'Root README no longer points to the reference layer');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'hooks', 'pre-commit')), 'Missing tracked pre-commit hook source');
+const preCommitContent = read('.Systematize/scripts/hooks/pre-commit');
+check(preCommitContent.includes('npm run verify'), 'Pre-commit hook must run the full verify chain');
+check(!preCommitContent.match(/npm run verify:docs\s*$/m), 'Pre-commit hook must not run verify:docs alone as the sole gate');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'setup-hooks.mjs')), 'Missing official hook setup script');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'clean-tracked-state.mjs')), 'Missing tracked clean tracked state helper');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'verify-clean-tree.mjs')), 'Missing official clean tracked state verification script');
@@ -392,6 +395,34 @@ if (existsSync(syncStatePath)) {
   const syncState = JSON.parse(readFileSync(syncStatePath, 'utf8'));
   check(syncState.features && !Array.isArray(syncState.features), 'sync-state.json features must be an object');
   check(typeof syncState.extensions === 'object', 'sync-state.json missing extensions container');
+}
+
+const healthContent = read('.Systematize/scripts/node/lib/health.mjs');
+check(healthContent.includes("scope: 'heuristic'"), 'health.mjs must declare heuristic scope in its return value');
+check(healthContent.includes('ADVISORY_PASS'), 'health.mjs must use advisory status labels, not authoritative ones');
+check(!healthContent.match(/status:.*'HEALTHY'/), 'health.mjs must not return HEALTHY as an authoritative verdict');
+
+const healthcheckCommandContent = read('commands/syskit.healthcheck.md');
+check(healthcheckCommandContent.includes('advisory'), 'Healthcheck command must declare advisory scope in its description');
+check(healthcheckCommandContent.includes('npm run verify'), 'Healthcheck command must reference the authoritative verify chain');
+
+const governingDocs = [
+  'README.md',
+  'docs/START_HERE.md',
+  'docs/ARCHITECTURE.md',
+  'docs/DISTRIBUTION.md',
+  'docs/REFERENCE.md',
+  'docs/OPTIONAL_CAPABILITIES.md',
+  'docs/PACKAGE_BOUNDARY.md',
+  'docs/policies/README.md'
+];
+const arabicSectionPattern = /^##\s+[\u0600-\u06FF]/m;
+for (const docPath of governingDocs) {
+  const docContent = read(docPath);
+  check(
+    arabicSectionPattern.test(docContent),
+    `Governing document ${docPath} must use Arabic section headings for language consistency`
+  );
 }
 
 if (failures.length > 0) {
