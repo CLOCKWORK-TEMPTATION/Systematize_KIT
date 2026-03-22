@@ -45,6 +45,7 @@ const MUTATING_COMMANDS = new Set([
 ]);
 
 const VALIDATION_COMMANDS = new Set(['check-prerequisites', 'healthcheck', 'check-alerts', 'feature-status']);
+const CLEAN_TREE_COMMANDS = new Set(['build-distribution']);
 
 class CommandExitError extends Error {
   constructor(code = 0) {
@@ -294,7 +295,9 @@ async function main() {
   const initTargetPath = command === 'init' && parsedArgs['target-path']
     ? resolve(String(parsedArgs['target-path']))
     : null;
-  const analyticsEnabled = runtimeConfig.analytics_enabled && (!initTargetPath || initTargetPath === resolve(repoRoot));
+  const analyticsEnabled = runtimeConfig.analytics_enabled
+    && !CLEAN_TREE_COMMANDS.has(command)
+    && (!initTargetPath || initTargetPath === resolve(repoRoot));
   const trackedFiles = getTrackedMarkdownFiles(repoRoot, branch);
   const beforeTimes = captureFileTimes(trackedFiles);
   const lifecycleContext = { repoRoot, branch, command };

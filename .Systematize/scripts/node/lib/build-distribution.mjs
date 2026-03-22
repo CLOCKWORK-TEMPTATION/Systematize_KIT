@@ -1,5 +1,6 @@
 import { execSync, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { ensureDir, getRepoRoot, parseArgs } from './common.mjs';
 import { getAvailableExtensionPackages } from './configuration.mjs';
@@ -23,6 +24,10 @@ function loadDistributionContract(repoRoot) {
 
   if (!Array.isArray(contract.generated_stage_files) || contract.generated_stage_files.length === 0) {
     throw new Error(`Distribution contract is missing generated stage files: ${DISTRIBUTION_CONTRACT_PATH}`);
+  }
+
+  if (!Array.isArray(contract.repo_generated_paths) || contract.repo_generated_paths.length === 0) {
+    throw new Error(`Distribution contract is missing repository generated paths: ${DISTRIBUTION_CONTRACT_PATH}`);
   }
 
   return contract;
@@ -54,6 +59,87 @@ function runNodeScript(repoRoot, scriptRelativePath, options = {}) {
 function runPrebuildGenerators(repoRoot, contract, options = {}) {
   for (const scriptRelativePath of contract.prebuild_generators) {
     runNodeScript(repoRoot, scriptRelativePath, options);
+  }
+}
+
+function normalizeRelativePath(relativePath) {
+  return relativePath.replace(/\\/g, '/');
+}
+
+function collectRepoGeneratedFiles(repoRoot, contractRelativePath) {
+  const absolutePath = join(repoRoot, contractRelativePath);
+  if (!existsSync(absolutePath)) {
+    throw new Error(`Repository generated path is missing from the repository: ${contractRelativePath}`);
+  }
+
+  const stats = statSync(absolutePath);
+  if (stats.isFile()) {
+    return [normalizeRelativePath(contractRelativePath)];
+  }
+
+  if (!stats.isDirectory()) {
+    throw new Error(`Repository generated path is neither a file nor a directory: ${contractRelativePath}`);
+  }
+
+  const files = [];
+  for (const entry of readdirSync(absolutePath, { withFileTypes: true })) {
+    const childRelativePath = join(contractRelativePath, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectRepoGeneratedFiles(repoRoot, childRelativePath));
+      continue;
+    }
+
+    if (entry.isFile()) {
+      files.push(normalizeRelativePath(childRelativePath));
+    }
+  }
+
+  return files.sort();
+}
+
+function getFileDigest(filePath) {
+  return createHash('sha256').update(readFileSync(filePath)).digest('hex');
+}
+
+function captureRepoGeneratedState(repoRoot, contract) {
+  const snapshot = new Map();
+
+  for (const contractRelativePath of contract.repo_generated_paths) {
+    for (const relativePath of collectRepoGeneratedFiles(repoRoot, contractRelativePath)) {
+      snapshot.set(relativePath, getFileDigest(join(repoRoot, relativePath)));
+    }
+  }
+
+  return snapshot;
+}
+
+function detectRepoGeneratedChanges(beforeSnapshot, afterSnapshot) {
+  const changedFiles = [];
+  const allPaths = new Set([...beforeSnapshot.keys(), ...afterSnapshot.keys()]);
+
+  for (const relativePath of [...allPaths].sort()) {
+    if (beforeSnapshot.get(relativePath) !== afterSnapshot.get(relativePath)) {
+      changedFiles.push(relativePath);
+    }
+  }
+
+  return changedFiles;
+}
+
+function assertRepoGeneratedFilesRemainSynchronized(repoRoot, contract, options = {}) {
+  const beforeSnapshot = captureRepoGeneratedState(repoRoot, contract);
+  runPrebuildGenerators(repoRoot, contract, options);
+  const afterSnapshot = captureRepoGeneratedState(repoRoot, contract);
+  const changedFiles = detectRepoGeneratedChanges(beforeSnapshot, afterSnapshot);
+
+  if (changedFiles.length > 0) {
+    throw new Error(
+      [
+        'Distribution build refused to continue because prebuild generators changed tracked generated repository files.',
+        'Synchronize the repository before packaging and rerun the official verification flow.',
+        ...changedFiles.map((relativePath) => `- ${relativePath}`)
+      ].join('\n')
+    );
   }
 }
 
@@ -170,7 +256,7 @@ OPTIONS:
 
   const repoRoot = getRepoRoot();
   const distributionContract = loadDistributionContract(repoRoot);
-  runPrebuildGenerators(repoRoot, distributionContract, { quiet: opts.json });
+  assertRepoGeneratedFilesRemainSynchronized(repoRoot, distributionContract, { quiet: opts.json });
   const distRoot = resolve(opts.output || join(repoRoot, 'dist'));
   const stageRoot = join(distRoot, distributionContract.bundle_root);
   const runtimePackageRoot = join(repoRoot, '.Systematize', 'scripts', 'node');
@@ -203,6 +289,7 @@ OPTIONS:
       tarball: tarballName
     },
     prebuild_generators: distributionContract.prebuild_generators,
+    repo_generated_paths: distributionContract.repo_generated_paths,
     included_paths: distributionContract.include_paths,
     generated_stage_files: distributionContract.generated_stage_files,
     available_extensions: getAvailableExtensionPackages(repoRoot).map((item) => ({

@@ -41,6 +41,7 @@ for (const fileName of readdirSync(join(repoRoot, 'commands')).filter((entry) =>
 }
 
 const commandCatalog = JSON.parse(read('.Systematize/config/command-catalog.json'));
+const distributionContract = JSON.parse(read('.Systematize/config/distribution-manifest.json'));
 const commandFiles = readdirSync(join(repoRoot, 'commands')).filter((entry) => entry.endsWith('.md'));
 const normalizePath = (value) => value.replace(/\\/g, '/');
 const catalogFiles = new Set(commandCatalog.commands.map((entry) => normalizePath(entry.file)));
@@ -157,6 +158,61 @@ check(syskitConfigContent.includes('export_enabled:'), 'Root syskit config is mi
 check(syskitConfigContent.includes('taskstoissues_enabled:'), 'Root syskit config is missing taskstoissues capability toggle');
 const rootPackageContent = read('package.json');
 check(rootPackageContent.includes('"package:dist"'), 'Root package.json is missing the distribution packaging script');
+check(
+  rootPackageContent.includes('"verify": "npm run test && npm run verify:docs && npm run verify:contracts"'),
+  'Root verify script no longer remains a check-only verification flow'
+);
+
+check(
+  Array.isArray(distributionContract.repo_generated_paths) && distributionContract.repo_generated_paths.length > 0,
+  'Distribution contract is missing repository generated paths'
+);
+check(
+  JSON.stringify(distributionContract.repo_generated_paths) === JSON.stringify([
+    'commands',
+    'docs/COMMAND_RUNTIME_MAP.md',
+    'docs/_project_tree.json'
+  ]),
+  'Distribution contract repository generated paths no longer match the official generated delivery surface'
+);
+
+const distributionDocContent = read('docs/DISTRIBUTION.md');
+check(
+  distributionDocContent.includes('يرفض المتابعة فورًا'),
+  'Distribution documentation no longer states that delivery refuses generated-repository drift'
+);
+check(
+  distributionDocContent.includes('git diff --name-only'),
+  'Distribution documentation no longer documents the clean-tree proof step'
+);
+check(
+  distributionDocContent.includes('npm run package:dist'),
+  'Distribution documentation no longer documents the official distribution command'
+);
+
+const buildDistributionContent = read('.Systematize/scripts/node/lib/build-distribution.mjs');
+check(
+  buildDistributionContent.includes('repo_generated_paths'),
+  'build-distribution no longer enforces repository generated paths from the distribution contract'
+);
+check(
+  buildDistributionContent.includes('Distribution build refused to continue because prebuild generators changed tracked generated repository files.'),
+  'build-distribution no longer fails explicitly when prebuild generation changes tracked repository files'
+);
+
+const ciWorkflowContent = read('.github/workflows/ci.yml');
+check(
+  ciWorkflowContent.includes('npm run package:dist'),
+  'CI no longer proves the official distribution path'
+);
+check(
+  ciWorkflowContent.includes('git diff --exit-code --name-only'),
+  'CI no longer proves that tracked files stay clean after packaging'
+);
+check(
+  (ciWorkflowContent.match(/npm run verify/g) || []).length >= 2,
+  'CI no longer verifies both before and after the official distribution path'
+);
 
 const workflowManagedFiles = [
   ...collectMarkdownAndScriptFiles('commands'),

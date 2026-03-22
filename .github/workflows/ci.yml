@@ -24,6 +24,15 @@ jobs:
       - name: Run verification suite
         run: npm run verify
 
+      - name: Build official distribution
+        run: npm run package:dist
+
+      - name: Assert tracked files stayed clean after packaging
+        run: git diff --exit-code --name-only
+
+      - name: Re-run verification after packaging
+        run: npm run verify
+
       - name: Smoke PowerShell entrypoints
         shell: pwsh
         run: |

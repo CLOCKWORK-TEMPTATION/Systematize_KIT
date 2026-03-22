@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import test from 'node:test';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,6 +9,15 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = resolve(fileURLToPath(new URL('../../../../', import.meta.url)));
 const distributionContractPath = join(repoRoot, '.Systematize', 'config', 'distribution-manifest.json');
 const windowsAbsolutePathPattern = /\b[A-Za-z]:\\[^\r\n]*/;
+const distributionFixturePaths = [
+  'README.md',
+  'package.json',
+  'package-lock.json',
+  'install-syskit.ps1',
+  'commands',
+  'docs',
+  '.Systematize'
+];
 
 function read(relativePath) {
   return readFileSync(join(repoRoot, relativePath), 'utf8');
@@ -29,6 +40,44 @@ function collectMarkdownFiles(relativeDir) {
   }
 
   return files;
+}
+
+function createDistributionFixtureRepo() {
+  const tempRepo = mkdtempSync(join(tmpdir(), 'syskit-distribution-'));
+
+  for (const relativePath of distributionFixturePaths) {
+    cpSync(join(repoRoot, relativePath), join(tempRepo, relativePath), { recursive: true, force: true });
+  }
+
+  execFileSync('git', ['init', '-q'], { cwd: tempRepo, stdio: 'pipe' });
+  execFileSync('git', ['config', 'user.name', 'Codex Test'], { cwd: tempRepo, stdio: 'pipe' });
+  execFileSync('git', ['config', 'user.email', 'codex@example.com'], { cwd: tempRepo, stdio: 'pipe' });
+  execFileSync('git', ['add', '.'], { cwd: tempRepo, stdio: 'pipe' });
+  execFileSync('git', ['commit', '-qm', 'fixture'], { cwd: tempRepo, stdio: 'pipe' });
+
+  return tempRepo;
+}
+
+function runBuildDistribution(tempRepo) {
+  return execFileSync(
+    'node',
+    [join(tempRepo, '.Systematize', 'scripts', 'node', 'cli.mjs'), 'build-distribution', '--json'],
+    { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }
+  );
+}
+
+function runGit(tempRepo, args) {
+  return execFileSync('git', args, { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }).trim();
+}
+
+function captureCommandFailure(runCommand) {
+  try {
+    runCommand();
+  } catch (error) {
+    return `${error.stdout || ''}\n${error.stderr || ''}\n${error.message || ''}`;
+  }
+
+  throw new Error('Expected command to fail, but it succeeded.');
 }
 
 const wrapperContracts = [
@@ -61,6 +110,11 @@ test('distribution contract is explicit and repository-safe', () => {
     '.Systematize/scripts/node/lib/generate-command-runtime-map.mjs',
     '.Systematize/scripts/node/lib/generate-project-tree.mjs'
   ]);
+  assert.deepEqual(contract.repo_generated_paths, [
+    'commands',
+    'docs/COMMAND_RUNTIME_MAP.md',
+    'docs/_project_tree.json'
+  ]);
   assert.deepEqual(contract.generated_stage_files, [
     'INSTALL.md',
     'install-framework.mjs',
@@ -68,7 +122,7 @@ test('distribution contract is explicit and repository-safe', () => {
     'distribution-manifest.json'
   ]);
 
-  for (const relativePath of [...contract.prebuild_generators, ...contract.include_paths]) {
+  for (const relativePath of [...contract.prebuild_generators, ...contract.include_paths, ...contract.repo_generated_paths]) {
     assert.ok(existsSync(join(repoRoot, relativePath)), `distribution contract path is missing: ${relativePath}`);
   }
 
@@ -85,8 +139,13 @@ test('distribution contract is explicit and repository-safe', () => {
   );
   assert.match(
     buildDistributionContent,
-    /prebuild_generators/,
-    'build-distribution must use the manifest generator list rather than a hidden path list'
+    /repo_generated_paths/,
+    'build-distribution must enforce repository generated paths declared by the contract'
+  );
+  assert.match(
+    buildDistributionContent,
+    /Distribution build refused to continue because prebuild generators changed tracked generated repository files\./,
+    'build-distribution must fail explicitly when prebuild generation changes tracked repository files'
   );
 
   const packageJson = JSON.parse(read('package.json'));
@@ -97,6 +156,51 @@ test('distribution contract is explicit and repository-safe', () => {
   );
 
   assert.ok(!existsSync(join(repoRoot, 'Untitled-2.ini')), 'stray delivery artifact still exists at the repository root');
+});
+
+test('official distribution refuses generated repository drift before packaging', () => {
+  const tempRepo = createDistributionFixtureRepo();
+
+  try {
+    const projectTreePath = join(tempRepo, 'docs', '_project_tree.json');
+    const originalProjectTree = readFileSync(projectTreePath, 'utf8');
+    writeFileSync(projectTreePath, `${originalProjectTree}\n `, 'utf8');
+
+    const failure = captureCommandFailure(() => runBuildDistribution(tempRepo));
+
+    assert.match(
+      failure,
+      /Distribution build refused to continue because prebuild generators changed tracked generated repository files\./
+    );
+    assert.match(failure, /docs\/_project_tree\.json/);
+    assert.equal(existsSync(join(tempRepo, 'dist', 'systematize-framework')), false);
+    assert.equal(readFileSync(projectTreePath, 'utf8'), originalProjectTree);
+    assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+  } finally {
+    rmSync(tempRepo, { recursive: true, force: true });
+  }
+});
+
+test('official distribution succeeds from a synchronized repository without mutating tracked files', () => {
+  const tempRepo = createDistributionFixtureRepo();
+
+  try {
+    const output = runBuildDistribution(tempRepo);
+    const result = JSON.parse(output);
+    const stagedManifest = JSON.parse(readFileSync(result.manifest, 'utf8'));
+
+    assert.ok(existsSync(result.stageRoot), 'distribution stage root is missing');
+    assert.ok(existsSync(result.tarball), 'runtime tarball is missing');
+    assert.ok(existsSync(result.manifest), 'distribution manifest is missing');
+    assert.deepEqual(
+      stagedManifest.repo_generated_paths,
+      ['commands', 'docs/COMMAND_RUNTIME_MAP.md', 'docs/_project_tree.json'],
+      'distribution manifest must carry the repository generated path contract into the bundle'
+    );
+    assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+  } finally {
+    rmSync(tempRepo, { recursive: true, force: true });
+  }
 });
 
 test('official documentation stays portable', () => {

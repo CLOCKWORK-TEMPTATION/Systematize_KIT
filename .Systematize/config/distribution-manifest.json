@@ -6,6 +6,11 @@
     ".Systematize/scripts/node/lib/generate-command-runtime-map.mjs",
     ".Systematize/scripts/node/lib/generate-project-tree.mjs"
   ],
+  "repo_generated_paths": [
+    "commands",
+    "docs/COMMAND_RUNTIME_MAP.md",
+    "docs/_project_tree.json"
+  ],
   "include_paths": [
     "README.md",
     "commands",
