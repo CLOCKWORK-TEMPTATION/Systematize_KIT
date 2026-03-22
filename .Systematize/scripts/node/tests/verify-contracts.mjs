@@ -133,6 +133,9 @@ const readmeContent = read('README.md');
 check(readmeContent.includes('Systematize Framework for Software Project Governance'), 'Root README no longer reflects the framework identity');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'hooks', 'pre-commit')), 'Missing tracked pre-commit hook source');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'setup-hooks.mjs')), 'Missing official hook setup script');
+check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'clean-tracked-state.mjs')), 'Missing tracked clean tracked state helper');
+check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'verify-clean-tree.mjs')), 'Missing official clean tracked state verification script');
+check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'tests', 'powershell-contracts.test.mjs')), 'Missing dedicated PowerShell contract suite');
 check(existsSync(join(repoRoot, 'docs', 'OPTIONAL_CAPABILITIES.md')), 'Missing optional capabilities contract document');
 check(existsSync(join(repoRoot, 'docs', 'PACKAGE_BOUNDARY.md')), 'Missing package boundary contract document');
 check(existsSync(join(repoRoot, 'docs', 'DISTRIBUTION.md')), 'Missing distribution contract document');
@@ -160,6 +163,8 @@ check(syskitConfigContent.includes('export_enabled:'), 'Root syskit config is mi
 check(syskitConfigContent.includes('taskstoissues_enabled:'), 'Root syskit config is missing taskstoissues capability toggle');
 const rootPackageContent = read('package.json');
 check(rootPackageContent.includes('"package:dist"'), 'Root package.json is missing the distribution packaging script');
+check(rootPackageContent.includes('"verify:clean-tree": "node .Systematize/scripts/node/lib/verify-clean-tree.mjs"'), 'Root package.json is missing the clean tracked state verification script');
+check(rootPackageContent.includes('"test:powershell": "node --test .Systematize/scripts/node/tests/powershell-contracts.test.mjs"'), 'Root package.json is missing the dedicated PowerShell contract suite');
 check(rootPackageContent.includes('"setup:hooks": "node .Systematize/scripts/node/lib/setup-hooks.mjs"'), 'Root package.json is missing the official hook setup script');
 check(rootPackageContent.includes('"prepare": "npm run setup:hooks"'), 'Root package.json is missing automatic hook installation during package setup');
 check(
@@ -186,8 +191,12 @@ check(
   'Distribution documentation no longer states that delivery refuses generated-repository drift'
 );
 check(
-  distributionDocContent.includes('git diff --exit-code --name-only'),
-  'Distribution documentation no longer documents the clean-tree proof step'
+  distributionDocContent.includes('npm run verify:clean-tree'),
+  'Distribution documentation no longer documents the official clean tracked state proof step'
+);
+check(
+  distributionDocContent.includes('npm run test:powershell'),
+  'Distribution documentation no longer documents the dedicated PowerShell contract suite'
 );
 check(
   distributionDocContent.includes('npm run package:dist'),
@@ -223,6 +232,10 @@ check(
   buildDistributionContent.includes('Distribution build refused to continue because prebuild generators changed tracked generated repository files.'),
   'build-distribution no longer fails explicitly when prebuild generation changes tracked repository files'
 );
+check(
+  buildDistributionContent.includes('Distribution build tracked state'),
+  'build-distribution no longer asserts clean tracked state after packaging'
+);
 
 const ciWorkflowContent = read('.github/workflows/ci.yml');
 check(
@@ -246,12 +259,16 @@ check(
   'CI no longer proves the official flow on Linux'
 );
 check(
-  ciWorkflowContent.includes('git diff --exit-code --name-only'),
-  'CI no longer proves that tracked files stay clean after packaging'
+  ciWorkflowContent.includes('npm run verify:clean-tree'),
+  'CI no longer proves that tracked files stay clean after packaging through the official verification script'
 );
 check(
   (ciWorkflowContent.match(/npm run verify/g) || []).length >= 2,
   'CI no longer verifies both before and after the official distribution path'
+);
+check(
+  ciWorkflowContent.includes('npm run test:powershell'),
+  'CI no longer runs the dedicated PowerShell contract suite'
 );
 check(
   ciWorkflowContent.includes('shell: pwsh'),

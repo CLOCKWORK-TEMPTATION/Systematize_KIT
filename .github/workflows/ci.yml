@@ -31,11 +31,15 @@ jobs:
       - name: Run verification suite
         run: npm run verify
 
+      - name: Run PowerShell contract suite
+        shell: pwsh
+        run: npm run test:powershell
+
       - name: Build official distribution
         run: npm run package:dist
 
       - name: Assert tracked files stayed clean after packaging
-        run: git diff --exit-code --name-only
+        run: npm run verify:clean-tree
 
       - name: Re-run verification after packaging
         run: npm run verify

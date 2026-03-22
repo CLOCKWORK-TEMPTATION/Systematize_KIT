@@ -159,6 +159,7 @@
                     "build-distribution.mjs",
                     "check-alerts.mjs",
                     "check-prerequisites.mjs",
+                    "clean-tracked-state.mjs",
                     "common.mjs",
                     "config-parser.mjs",
                     "configuration.mjs",
@@ -189,16 +190,19 @@
                     "snapshot-artifacts.mjs",
                     "sync-command-metadata.mjs",
                     "update-agent-context.mjs",
-                    "update-sync-state.mjs"
+                    "update-sync-state.mjs",
+                    "verify-clean-tree.mjs"
                   ],
                   "tests": {
                     "files": [
+                      "clean-tracked-state.test.mjs",
                       "configuration.test.mjs",
                       "delivery-contracts.test.mjs",
                       "extensions.test.mjs",
                       "health.test.mjs",
                       "init-syskit.test.mjs",
                       "optional-capabilities.test.mjs",
+                      "powershell-contracts.test.mjs",
                       "smoke.test.mjs",
                       "verify-contracts.mjs",
                       "workflow-gates.test.mjs"

@@ -123,15 +123,16 @@ npm run verify:docs
 ```text
 npm ci
 npm run verify
+npm run test:powershell
 npm run package:dist
-git diff --exit-code --name-only
+npm run verify:clean-tree
 npm run verify
 ```
 
 ويجب أن يبقى خرج:
 
 ```text
-git diff --exit-code --name-only
+npm run verify:clean-tree
 ```
 
 فارغًا بعد مسار التوزيع الرسمي.

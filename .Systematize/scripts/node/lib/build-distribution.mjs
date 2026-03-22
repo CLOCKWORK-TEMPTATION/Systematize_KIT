@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { ensureDir, getRepoRoot, parseArgs } from './common.mjs';
+import { assertTrackedStateMatches, collectTrackedState } from './clean-tracked-state.mjs';
 import { getAvailableExtensionPackages } from './configuration.mjs';
 
 const DISTRIBUTION_CONTRACT_PATH = join('.Systematize', 'config', 'distribution-manifest.json');
@@ -255,6 +256,7 @@ OPTIONS:
   }
 
   const repoRoot = getRepoRoot();
+  const trackedStateBeforePackaging = collectTrackedState(repoRoot);
   const distributionContract = loadDistributionContract(repoRoot);
   assertRepoGeneratedFilesRemainSynchronized(repoRoot, distributionContract, { quiet: opts.json });
   const distRoot = resolve(opts.output || join(repoRoot, 'dist'));
@@ -301,6 +303,7 @@ OPTIONS:
 
   writeFileSync(join(stageRoot, 'distribution-manifest.json'), JSON.stringify(manifest, null, 2), 'utf8');
   verifyStageRoot(stageRoot, distributionContract);
+  assertTrackedStateMatches(repoRoot, trackedStateBeforePackaging, 'Distribution build tracked state');
 
   const result = {
     distRoot,

@@ -72,6 +72,14 @@ function runBuildDistribution(tempRepo) {
   );
 }
 
+function runVerifyCleanTree(tempRepo) {
+  return execFileSync(
+    'node',
+    [join(tempRepo, '.Systematize', 'scripts', 'node', 'lib', 'verify-clean-tree.mjs'), '--json'],
+    { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }
+  );
+}
+
 function runGit(tempRepo, args) {
   return execFileSync('git', args, { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }).trim();
 }
@@ -173,6 +181,11 @@ test('distribution contract is explicit and repository-safe', () => {
     /Distribution build refused to continue because prebuild generators changed tracked generated repository files\./,
     'build-distribution must fail explicitly when prebuild generation changes tracked repository files'
   );
+  assert.match(
+    buildDistributionContent,
+    /Distribution build tracked state/,
+    'build-distribution must assert tracked repository cleanliness after packaging'
+  );
 
   const packageJson = JSON.parse(read('package.json'));
   assert.equal(
@@ -189,6 +202,11 @@ test('distribution contract is explicit and repository-safe', () => {
     packageJson.scripts.prepare,
     'npm run setup:hooks',
     'package setup must install the tracked Git hooks automatically'
+  );
+  assert.equal(
+    packageJson.scripts['verify:clean-tree'],
+    'node .Systematize/scripts/node/lib/verify-clean-tree.mjs',
+    'official clean tracked state verification must delegate to the Node verification script'
   );
 
   assert.ok(!existsSync(join(repoRoot, 'Untitled-2.ini')), 'stray delivery artifact still exists at the repository root');
@@ -233,7 +251,11 @@ test('official distribution succeeds from a synchronized repository without muta
       ['commands', 'docs/COMMAND_RUNTIME_MAP.md', 'docs/_project_tree.json'],
       'distribution manifest must carry the repository generated path contract into the bundle'
     );
-    assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+    assert.deepEqual(JSON.parse(runVerifyCleanTree(tempRepo)), {
+      working_tree_files: [],
+      staged_files: [],
+      tracked_files: []
+    });
   } finally {
     rmSync(tempRepo, { recursive: true, force: true });
   }
@@ -253,7 +275,11 @@ test('generated Node installer bootstraps a fresh repository from the staged dis
     );
 
     assertInstalledRepository(targetRepo, JSON.parse(installOutput));
-    assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+    assert.deepEqual(JSON.parse(runVerifyCleanTree(tempRepo)), {
+      working_tree_files: [],
+      staged_files: [],
+      tracked_files: []
+    });
   } finally {
     rmSync(targetRepo, { recursive: true, force: true });
     rmSync(tempRepo, { recursive: true, force: true });
@@ -274,7 +300,11 @@ test('generated PowerShell installer bootstraps a fresh repository from the stag
     );
 
     assertInstalledRepository(targetRepo, JSON.parse(installOutput));
-    assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+    assert.deepEqual(JSON.parse(runVerifyCleanTree(tempRepo)), {
+      working_tree_files: [],
+      staged_files: [],
+      tracked_files: []
+    });
   } finally {
     rmSync(targetRepo, { recursive: true, force: true });
     rmSync(tempRepo, { recursive: true, force: true });
