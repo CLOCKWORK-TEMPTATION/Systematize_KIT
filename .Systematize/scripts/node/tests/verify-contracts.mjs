@@ -131,6 +131,8 @@ check(initPsContent.includes("Invoke-NodeSyskitCommand -CommandName 'init'"), 'P
 
 const readmeContent = read('README.md');
 check(readmeContent.includes('Systematize Framework for Software Project Governance'), 'Root README no longer reflects the framework identity');
+check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'hooks', 'pre-commit')), 'Missing tracked pre-commit hook source');
+check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'setup-hooks.mjs')), 'Missing official hook setup script');
 check(existsSync(join(repoRoot, 'docs', 'OPTIONAL_CAPABILITIES.md')), 'Missing optional capabilities contract document');
 check(existsSync(join(repoRoot, 'docs', 'PACKAGE_BOUNDARY.md')), 'Missing package boundary contract document');
 check(existsSync(join(repoRoot, 'docs', 'DISTRIBUTION.md')), 'Missing distribution contract document');
@@ -158,6 +160,8 @@ check(syskitConfigContent.includes('export_enabled:'), 'Root syskit config is mi
 check(syskitConfigContent.includes('taskstoissues_enabled:'), 'Root syskit config is missing taskstoissues capability toggle');
 const rootPackageContent = read('package.json');
 check(rootPackageContent.includes('"package:dist"'), 'Root package.json is missing the distribution packaging script');
+check(rootPackageContent.includes('"setup:hooks": "node .Systematize/scripts/node/lib/setup-hooks.mjs"'), 'Root package.json is missing the official hook setup script');
+check(rootPackageContent.includes('"prepare": "npm run setup:hooks"'), 'Root package.json is missing automatic hook installation during package setup');
 check(
   rootPackageContent.includes('"verify": "npm run test && npm run verify:docs && npm run verify:contracts"'),
   'Root verify script no longer remains a check-only verification flow'
@@ -182,12 +186,20 @@ check(
   'Distribution documentation no longer states that delivery refuses generated-repository drift'
 );
 check(
-  distributionDocContent.includes('git diff --name-only'),
+  distributionDocContent.includes('git diff --exit-code --name-only'),
   'Distribution documentation no longer documents the clean-tree proof step'
 );
 check(
   distributionDocContent.includes('npm run package:dist'),
   'Distribution documentation no longer documents the official distribution command'
+);
+check(
+  distributionDocContent.includes('.Systematize/scripts/hooks/pre-commit'),
+  'Distribution documentation no longer documents the tracked local pre-commit hook'
+);
+check(
+  distributionDocContent.includes('npm run setup:hooks'),
+  'Distribution documentation no longer documents manual hook installation'
 );
 
 const buildDistributionContent = read('.Systematize/scripts/node/lib/build-distribution.mjs');

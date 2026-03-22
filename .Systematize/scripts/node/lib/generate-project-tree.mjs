@@ -9,6 +9,7 @@ const outputPath = join(repoRoot, 'docs', '_project_tree.json');
 const includeRootFiles = ['README.md', 'package.json', 'package-lock.json', 'install-syskit.ps1'];
 const includeDirectories = ['commands', '.Systematize', 'docs'];
 const excludeDirectories = new Set(['.git', 'node_modules']);
+const includeExtensionlessFiles = new Set(['pre-commit']);
 
 function sortEntries(entries) {
   return [...entries].sort((left, right) => left.localeCompare(right, 'en'));
@@ -31,7 +32,7 @@ function buildDirectoryTree(relativeDir) {
     }
 
     const extension = extname(entry).toLowerCase();
-    if (['.json', '.md', '.mjs', '.ps1', '.yml', '.yaml'].includes(extension)) {
+    if (includeExtensionlessFiles.has(entry) || ['.json', '.md', '.mjs', '.ps1', '.yml', '.yaml'].includes(extension)) {
       files.push(entry);
     }
   }

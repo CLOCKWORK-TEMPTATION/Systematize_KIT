@@ -67,9 +67,46 @@ systematize -> clarify -> constitution -> research -> plan -> tasks -> review ->
 ## أوامر التحقق
 
 ```text
+npm run setup:hooks
 npm run test
 npm run generate:docs
 npm run verify
+```
+
+يُثبَّت hook المنع المحلي قبل الالتزام تلقائيًا عند تشغيل:
+
+```text
+npm ci
+```
+
+أو:
+
+```text
+npm install
+```
+
+ويمكن إعادة تثبيته يدويًا عند الحاجة عبر:
+
+```text
+npm run setup:hooks
+```
+
+ملف hook المتتبَّع داخل المستودع موجود في:
+
+```text
+.Systematize/scripts/hooks/pre-commit
+```
+
+ويشغّل:
+
+```text
+npm run verify:docs
+```
+
+قبل السماح بأي
+
+```text
+git commit
 ```
 
 ## الوثائق الرسمية المولدة

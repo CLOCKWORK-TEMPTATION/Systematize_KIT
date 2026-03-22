@@ -73,6 +73,49 @@ install-framework.ps1
   `init`
   وفق بيانات الحزمة نفسها.
 
+## المنع المحلي قبل الالتزام
+
+ملف المنع المحلي الرسمي المتتبَّع داخل المستودع موجود في:
+
+```text
+.Systematize/scripts/hooks/pre-commit
+```
+
+ويُثبَّت تلقائيًا داخل مسار hooks الفعلي الخاص بالمستودع عند تشغيل:
+
+```text
+npm ci
+npm install
+```
+
+لأن الحزمة الجذرية تشغّل:
+
+```text
+prepare
+```
+
+الذي يستدعي:
+
+```text
+npm run setup:hooks
+```
+
+ويمكن إعادة التثبيت يدويًا عبر نفس الأمر.
+
+هذا الـ
+`pre-commit`
+يشغّل:
+
+```text
+npm run verify:docs
+```
+
+وبذلك يمنع إدخال
+`commit`
+يحمل ملفات مولدة خرجت من المزامنة قبل أن تصل الحالة إلى
+`CI`
+أصلًا.
+
 ## تسلسل الإثبات النهائي
 
 الحكم التشغيلي النهائي على الجاهزية يثبت فقط إذا نجح التسلسل التالي من نسخة نظيفة:
@@ -81,14 +124,14 @@ install-framework.ps1
 npm ci
 npm run verify
 npm run package:dist
-git diff --name-only
+git diff --exit-code --name-only
 npm run verify
 ```
 
 ويجب أن يبقى خرج:
 
 ```text
-git diff --name-only
+git diff --exit-code --name-only
 ```
 
 فارغًا بعد مسار التوزيع الرسمي.

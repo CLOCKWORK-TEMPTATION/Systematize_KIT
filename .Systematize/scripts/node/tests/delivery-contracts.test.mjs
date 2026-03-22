@@ -70,6 +70,11 @@ function runGit(tempRepo, args) {
   return execFileSync('git', args, { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }).trim();
 }
 
+function getHooksDirectory(tempRepo) {
+  const hooksPath = runGit(tempRepo, ['rev-parse', '--git-path', 'hooks']);
+  return resolve(tempRepo, hooksPath);
+}
+
 function captureCommandFailure(runCommand) {
   try {
     runCommand();
@@ -154,6 +159,16 @@ test('distribution contract is explicit and repository-safe', () => {
     'node .Systematize/scripts/node/cli.mjs build-distribution',
     'official distribution script must delegate to the Node runtime command'
   );
+  assert.equal(
+    packageJson.scripts['setup:hooks'],
+    'node .Systematize/scripts/node/lib/setup-hooks.mjs',
+    'official hook setup script must delegate to the Node runtime command'
+  );
+  assert.equal(
+    packageJson.scripts.prepare,
+    'npm run setup:hooks',
+    'package setup must install the tracked Git hooks automatically'
+  );
 
   assert.ok(!existsSync(join(repoRoot, 'Untitled-2.ini')), 'stray delivery artifact still exists at the repository root');
 });
@@ -198,6 +213,29 @@ test('official distribution succeeds from a synchronized repository without muta
       'distribution manifest must carry the repository generated path contract into the bundle'
     );
     assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+  } finally {
+    rmSync(tempRepo, { recursive: true, force: true });
+  }
+});
+
+test('tracked pre-commit hook can be installed into the active Git hooks directory', () => {
+  const tempRepo = createDistributionFixtureRepo();
+
+  try {
+    execFileSync(process.execPath, [join(tempRepo, '.Systematize', 'scripts', 'node', 'lib', 'setup-hooks.mjs')], {
+      cwd: tempRepo,
+      encoding: 'utf8',
+      stdio: 'pipe'
+    });
+
+    const installedHookPath = join(getHooksDirectory(tempRepo), 'pre-commit');
+    const trackedHookPath = join(tempRepo, '.Systematize', 'scripts', 'hooks', 'pre-commit');
+    const installedHook = readFileSync(installedHookPath, 'utf8');
+    const trackedHook = readFileSync(trackedHookPath, 'utf8').replace(/\r\n/g, '\n');
+
+    assert.ok(existsSync(installedHookPath), 'pre-commit hook was not installed');
+    assert.equal(installedHook, trackedHook, 'installed pre-commit hook must match the tracked source');
+    assert.doesNotMatch(installedHook, /\r\n/, 'installed pre-commit hook must be normalized to LF line endings');
   } finally {
     rmSync(tempRepo, { recursive: true, force: true });
   }

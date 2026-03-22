@@ -145,6 +145,9 @@
           "scripts": {
             "files": [],
             "directories": {
+              "hooks": [
+                "pre-commit"
+              ],
               "node": {
                 "files": [
                   "cli.mjs",
@@ -180,6 +183,7 @@
                     "record-analytics.mjs",
                     "remove-extension.mjs",
                     "run-healthcheck.mjs",
+                    "setup-hooks.mjs",
                     "setup-plan.mjs",
                     "setup-research.mjs",
                     "setup-tasks.mjs",
