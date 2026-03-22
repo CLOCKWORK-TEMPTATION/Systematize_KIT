@@ -22,6 +22,9 @@ This directory contains the extracted heavy governance policies that were previo
 - `docs/policies/research-policy.md`
 - `docs/policies/tasks-policy.md`
 - `docs/policies/analyze-policy.md`
+- `docs/policies/checklist-policy.md`
+- `docs/policies/implement-policy.md`
+- `docs/policies/clarify-policy.md`
 
 ## Operating Rule
 
