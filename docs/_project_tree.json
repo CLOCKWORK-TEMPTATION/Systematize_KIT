@@ -272,6 +272,9 @@
         "directories": {
           "policies": [
             "analyze-policy.md",
+            "checklist-policy.md",
+            "clarify-policy.md",
+            "implement-policy.md",
             "README.md",
             "research-policy.md",
             "systematize-policy.md",

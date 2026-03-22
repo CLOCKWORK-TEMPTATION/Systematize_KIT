@@ -191,7 +191,10 @@ const extractedPolicyMap = {
   'commands/syskit.systematize.md': 'docs/policies/systematize-policy.md',
   'commands/syskit.research.md': 'docs/policies/research-policy.md',
   'commands/syskit.tasks.md': 'docs/policies/tasks-policy.md',
-  'commands/syskit.analyze.md': 'docs/policies/analyze-policy.md'
+  'commands/syskit.analyze.md': 'docs/policies/analyze-policy.md',
+  'commands/syskit.checklist.md': 'docs/policies/checklist-policy.md',
+  'commands/syskit.implement.md': 'docs/policies/implement-policy.md',
+  'commands/syskit.clarify.md': 'docs/policies/clarify-policy.md'
 };
 
 for (const [commandPath, policyPath] of Object.entries(extractedPolicyMap)) {
