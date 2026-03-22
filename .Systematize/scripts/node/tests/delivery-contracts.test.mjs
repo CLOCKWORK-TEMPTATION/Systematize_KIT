@@ -5,10 +5,12 @@ import { tmpdir } from 'node:os';
 import test from 'node:test';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hasPowerShell } from './helpers/powershell.mjs';
 
 const repoRoot = resolve(fileURLToPath(new URL('../../../../', import.meta.url)));
 const distributionContractPath = join(repoRoot, '.Systematize', 'config', 'distribution-manifest.json');
 const windowsAbsolutePathPattern = /\b[A-Za-z]:\\[^\r\n]*/;
+const powerShellAvailable = hasPowerShell();
 const distributionFixturePaths = [
   'README.md',
   'package.json',
@@ -58,6 +60,10 @@ function createDistributionFixtureRepo() {
   return tempRepo;
 }
 
+function createFreshInstallTarget() {
+  return mkdtempSync(join(tmpdir(), 'syskit-install-target-'));
+}
+
 function runBuildDistribution(tempRepo) {
   return execFileSync(
     'node',
@@ -73,6 +79,21 @@ function runGit(tempRepo, args) {
 function getHooksDirectory(tempRepo) {
   const hooksPath = runGit(tempRepo, ['rev-parse', '--git-path', 'hooks']);
   return resolve(tempRepo, hooksPath);
+}
+
+function assertInstalledRepository(targetRepo, summary) {
+  assert.equal(summary.installation_detected, false, 'fresh installer target must start uninstalled');
+  assert.equal(summary.reinstall_performed, false, 'fresh installer target must not report a reinstall');
+  assert.deepEqual(summary.selected_platforms, ['claude'], 'installer must forward the requested platform set');
+  assert.ok(existsSync(join(targetRepo, '.Systematize', 'memory', 'install-state.json')), 'installer must persist install-state.json');
+  assert.ok(existsSync(join(targetRepo, 'commands', 'syskit.init.md')), 'installer must lay down governance command files');
+  assert.ok(existsSync(join(targetRepo, '.Systematize', 'config', 'syskit-config.yml')), 'installer must lay down runtime configuration');
+  assert.ok(existsSync(join(targetRepo, 'CLAUDE.md')), 'installer must create the requested root platform output');
+  assert.ok(existsSync(join(targetRepo, '.claude', 'CLAUDE.md')), 'installer must create mirrored platform outputs');
+  assert.equal(existsSync(join(targetRepo, 'AGENTS.md')), false, 'installer must not create outputs for unselected platforms');
+
+  const state = JSON.parse(readFileSync(join(targetRepo, '.Systematize', 'memory', 'install-state.json'), 'utf8'));
+  assert.deepEqual(state.selected_platforms, ['claude'], 'install-state.json must record the selected platform set');
 }
 
 function captureCommandFailure(runCommand) {
@@ -214,6 +235,48 @@ test('official distribution succeeds from a synchronized repository without muta
     );
     assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
   } finally {
+    rmSync(tempRepo, { recursive: true, force: true });
+  }
+});
+
+test('generated Node installer bootstraps a fresh repository from the staged distribution bundle', () => {
+  const tempRepo = createDistributionFixtureRepo();
+  const targetRepo = createFreshInstallTarget();
+
+  try {
+    const output = runBuildDistribution(tempRepo);
+    const result = JSON.parse(output);
+    const installOutput = execFileSync(
+      'node',
+      [join(result.stageRoot, 'install-framework.mjs'), '--target-path', targetRepo, '--platforms', 'claude', '--json'],
+      { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }
+    );
+
+    assertInstalledRepository(targetRepo, JSON.parse(installOutput));
+    assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+  } finally {
+    rmSync(targetRepo, { recursive: true, force: true });
+    rmSync(tempRepo, { recursive: true, force: true });
+  }
+});
+
+test('generated PowerShell installer bootstraps a fresh repository from the staged distribution bundle', { skip: !powerShellAvailable }, () => {
+  const tempRepo = createDistributionFixtureRepo();
+  const targetRepo = createFreshInstallTarget();
+
+  try {
+    const output = runBuildDistribution(tempRepo);
+    const result = JSON.parse(output);
+    const installOutput = execFileSync(
+      'pwsh',
+      ['-File', join(result.stageRoot, 'install-framework.ps1'), '--target-path', targetRepo, '--platforms', 'claude', '--json'],
+      { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }
+    );
+
+    assertInstalledRepository(targetRepo, JSON.parse(installOutput));
+    assert.equal(runGit(tempRepo, ['diff', '--name-only']), '');
+  } finally {
+    rmSync(targetRepo, { recursive: true, force: true });
     rmSync(tempRepo, { recursive: true, force: true });
   }
 });
