@@ -24,6 +24,279 @@
           "command": "setup-plan",
           "status": "completed",
           "has_git": false
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T07:12:20.601Z",
+          "command": "check-prerequisites",
+          "status": "failed",
+          "exit_code": 1
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T07:12:20.616Z",
+          "command": "feature-status",
+          "status": "failed",
+          "exit_code": 1
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T07:59:38.579Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T07:59:50.756Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T08:00:26.729Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T08:00:26.782Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T08:00:27.279Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T08:00:37.876Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T08:00:38.367Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T08:01:13.888Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T08:01:14.352Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:08:19.569Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:08:20.035Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:18:12.897Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:18:13.386Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:18:52.398Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:18:52.934Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:36:17.573Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:36:18.040Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:36:51.870Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:36:52.336Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:39:44.643Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:39:45.103Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:40:31.280Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:40:31.739Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:40:44.687Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:40:45.134Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:41:01.703Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:41:02.209Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:43:27.149Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T09:43:27.590Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:14:01.611Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:14:02.161Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:14:39.902Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:14:40.438Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:15:41.154Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:15:41.645Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:16:30.453Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
+        },
+        {
+          "type": "command_lifecycle",
+          "timestamp": "2026-03-18T11:16:30.970Z",
+          "command": "init",
+          "status": "completed",
+          "has_git": true
         }
       ],
       "phases": {}

@@ -14,6 +14,27 @@ function read(relativePath) {
   return readFileSync(join(repoRoot, relativePath), 'utf8');
 }
 
+function collectMarkdownAndScriptFiles(relativeDir) {
+  const absoluteDir = join(repoRoot, relativeDir);
+  const files = [];
+  const nodeTestsRoot = join('.Systematize', 'scripts', 'node', 'tests');
+
+  for (const entry of readdirSync(absoluteDir, { withFileTypes: true })) {
+    const relativePath = join(relativeDir, entry.name);
+    if (entry.isDirectory()) {
+      if (relativePath === nodeTestsRoot) continue;
+      files.push(...collectMarkdownAndScriptFiles(relativePath));
+      continue;
+    }
+
+    if (/\.(md|mjs|ps1)$/i.test(entry.name)) {
+      files.push(relativePath);
+    }
+  }
+
+  return files;
+}
+
 for (const fileName of readdirSync(join(repoRoot, 'commands')).filter((entry) => entry.endsWith('.md'))) {
   const content = read(join('commands', fileName));
   check(/^## Output\s*$/m.test(content), `Missing ## Output section in commands/${fileName}`);
@@ -39,10 +60,58 @@ check(psAlertsContent.includes('Get-AlertsConfig'), 'PowerShell alert checks no 
 const initNodeContent = read('.Systematize/scripts/node/lib/init-syskit.mjs');
 check(initNodeContent.includes('features: {}'), 'Node init script no longer initializes analytics features as an object');
 check(initNodeContent.includes('extensions: {}'), 'Node init script no longer initializes sync-state extensions');
+check(initNodeContent.includes('install-state.json'), 'Node init script no longer persists install-state.json');
+check(initNodeContent.includes('snapshot_path'), 'Node init script no longer reports snapshot_path');
 
 const initPsContent = read('.Systematize/scripts/powershell/init-syskit.ps1');
 check(initPsContent.includes('features = @{}'), 'PowerShell init script no longer initializes features as an object');
 check(initPsContent.includes('extensions = @{'), 'PowerShell init script no longer initializes extensions metadata');
+check(initPsContent.includes('install-state.json'), 'PowerShell init script no longer persists install-state.json');
+check(initPsContent.includes('snapshot_path'), 'PowerShell init script no longer reports snapshot_path');
+
+const workflowManagedFiles = [
+  ...collectMarkdownAndScriptFiles('commands'),
+  ...collectMarkdownAndScriptFiles('.Systematize/templates'),
+  ...collectMarkdownAndScriptFiles('.Systematize/scripts'),
+  '.Systematize/presets/api-service/templates/sys-template.md'
+];
+const bannedLegacyWorkflowPatterns = [
+  /\bspec\b/i,
+  /\bspecs\b/i,
+  /Specification/,
+  /Specifications/,
+  /docs\(specs\)/,
+  /SPECS_DIR/,
+  /Get-AllFeatureDirs/,
+  /getAllFeatureDirs/
+];
+
+for (const relativePath of [...new Set(workflowManagedFiles)]) {
+  const content = read(relativePath);
+  for (const pattern of bannedLegacyWorkflowPatterns) {
+    check(!pattern.test(content), `Legacy workflow wording remains in ${relativePath}: ${pattern}`);
+  }
+}
+
+const clarifyContent = read('commands/syskit.clarify.md');
+check(
+  clarifyContent.includes('/syskit.constitution'),
+  'Clarify command no longer points to /syskit.constitution as the next mandatory gate'
+);
+check(
+  !clarifyContent.includes('not ready for `/syskit.plan`'),
+  'Clarify command still suggests /syskit.plan directly'
+);
+
+const planContent = read('commands/syskit.plan.md');
+check(planContent.includes('AMINOOOF_DIR'), 'Plan command no longer uses the aminooof workspace contract');
+check(!planContent.includes('Execute Phase 0: Research'), 'Plan command still executes research implicitly');
+check(planContent.includes('If `research.md` is missing or incomplete, fail and direct the user to `/syskit.research`.'), 'Plan command no longer enforces the mandatory research gate');
+
+const quickstartContent = read('commands/syskit.quickstart.md');
+check(!quickstartContent.includes('Generate `plan.md`'), 'Quickstart still generates plan.md');
+check(quickstartContent.includes('/syskit.constitution'), 'Quickstart no longer hands off to /syskit.constitution');
+check(quickstartContent.includes('/syskit.research'), 'Quickstart no longer hands off to /syskit.research');
 
 const recordAnalyticsPsContent = read('.Systematize/scripts/powershell/record-analytics.ps1');
 check(recordAnalyticsPsContent.includes('custom_command_used'), 'PowerShell analytics script no longer supports custom command tracking');
@@ -52,8 +121,6 @@ check(
   existsSync(join(repoRoot, '.Systematize', 'templates', 'overrides', '.gitkeep')),
   'Missing .Systematize/templates/overrides/.gitkeep'
 );
-
-check(existsSync(join(repoRoot, 'polished-petting-curry.md')), 'Missing polished-petting-curry.md active plan file');
 
 const analyticsPath = join(repoRoot, '.Systematize', 'memory', 'analytics.json');
 if (existsSync(analyticsPath)) {

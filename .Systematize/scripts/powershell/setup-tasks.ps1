@@ -23,10 +23,10 @@ if ($Help) {
 . "$PSScriptRoot/common.ps1"
 
 # Get all paths and variables from common functions
-$paths = Get-FeaturePathsEnv
+$paths = Get-FeaturePathsEnv -Mutating -EnsureExists
 $repoRoot = $paths.REPO_ROOT
 $branchName = if ($Branch) { $Branch } else { $paths.CURRENT_BRANCH }
-$featureDir = if ($Branch) { Get-FeatureDir -RepoRoot $repoRoot -Branch $Branch } else { $paths.FEATURE_DIR }
+$featureDir = if ($Branch) { Get-FeatureDir -RepoRoot $repoRoot -Branch $Branch -Mutating -EnsureExists } else { $paths.FEATURE_DIR }
 $paths = [PSCustomObject]@{
     REPO_ROOT = $repoRoot
     CURRENT_BRANCH = $branchName
@@ -46,13 +46,30 @@ if (-not (Test-FeatureBranch -Branch $paths.CURRENT_BRANCH -HasGit $paths.HAS_GI
 # Ensure the feature directory exists
 Ensure-Dir -Path $paths.FEATURE_DIR
 
+if (-not (Test-Path $paths.FEATURE_SYS -PathType Leaf)) {
+    Write-Output "ERROR: sys.md not found in $($paths.FEATURE_DIR)"
+    Write-Output "Run /syskit.systematize first to create the governing sys document."
+    exit 1
+}
+
+$planStatus = Get-DocumentCompletionStatus -FilePath $paths.IMPL_PLAN
+if ($planStatus.status -ne 'complete') {
+    Write-Output "ERROR: plan.md is missing or incomplete in $($paths.FEATURE_DIR)"
+    Write-Output "Run /syskit.plan and complete it before /syskit.tasks."
+    exit 1
+}
+
 # Copy tasks template if it exists, otherwise note it or create empty file
 $template = Resolve-Template -TemplateName 'tasks-template' -RepoRoot $paths.REPO_ROOT
 if ($template -and (Test-Path $template)) {
     Copy-Item $template $paths.TASKS -Force
-    Write-Output "Copied tasks template to $($paths.TASKS)"
+    if (-not $Json) {
+        Write-Output "Copied tasks template to $($paths.TASKS)"
+    }
 } else {
-    Write-Warning "Tasks template not found"
+    if (-not $Json) {
+        Write-Warning "Tasks template not found"
+    }
     # Create a basic tasks file if template doesn't exist
     New-Item -ItemType File -Path $paths.TASKS -Force | Out-Null
 }
@@ -62,7 +79,7 @@ if ($Json) {
     $result = [PSCustomObject]@{
         FEATURE_SYS = $paths.FEATURE_SYS
         TASKS = $paths.TASKS
-        SPECS_DIR = $paths.FEATURE_DIR
+        AMINOOOF_DIR = $paths.FEATURE_DIR
         BRANCH = $paths.CURRENT_BRANCH
         HAS_GIT = $paths.HAS_GIT
     }
@@ -70,7 +87,7 @@ if ($Json) {
 } else {
     Write-Output "FEATURE_SYS: $($paths.FEATURE_SYS)"
     Write-Output "TASKS: $($paths.TASKS)"
-    Write-Output "SPECS_DIR: $($paths.FEATURE_DIR)"
+    Write-Output "AMINOOOF_DIR: $($paths.FEATURE_DIR)"
     Write-Output "BRANCH: $($paths.CURRENT_BRANCH)"
     Write-Output "HAS_GIT: $($paths.HAS_GIT)"
 }
