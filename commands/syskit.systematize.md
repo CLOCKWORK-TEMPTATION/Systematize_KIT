@@ -25,6 +25,10 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 This command is the orchestration surface for producing the governing `sys.md` document for a feature.
 
+- **المسار الكامل**: هذا الأمر هو نقطة الدخول الافتراضية بعد اكتمال التهيئة.
+- المدخل الرسمي على الأسطح الظاهرة للمستخدم يبقى `/syskit.guide`.
+- استخدم هذا الأمر عندما تكون التهيئة مكتملة ولا يكون **المسار السريع** مطلوبًا صراحة.
+
 The heavy PRD policy, quality rules, checklist logic, and clarification contract have been extracted to:
 
 ```text

@@ -265,7 +265,9 @@
           "COMMAND_RUNTIME_MAP.md",
           "DISTRIBUTION.md",
           "OPTIONAL_CAPABILITIES.md",
-          "PACKAGE_BOUNDARY.md"
+          "PACKAGE_BOUNDARY.md",
+          "REFERENCE.md",
+          "START_HERE.md"
         ],
         "directories": {
           "policies": [

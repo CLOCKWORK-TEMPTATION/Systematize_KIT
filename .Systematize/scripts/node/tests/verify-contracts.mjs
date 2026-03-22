@@ -131,11 +131,16 @@ check(initPsContent.includes("Invoke-NodeSyskitCommand -CommandName 'init'"), 'P
 
 const readmeContent = read('README.md');
 check(readmeContent.includes('Systematize Framework for Software Project Governance'), 'Root README no longer reflects the framework identity');
+check(readmeContent.includes('docs/START_HERE.md'), 'Root README no longer points to the official start-here document');
+check(readmeContent.includes('/syskit.guide'), 'Root README no longer points to the official guidance entry');
+check(readmeContent.includes('docs/REFERENCE.md'), 'Root README no longer points to the reference layer');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'hooks', 'pre-commit')), 'Missing tracked pre-commit hook source');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'setup-hooks.mjs')), 'Missing official hook setup script');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'clean-tracked-state.mjs')), 'Missing tracked clean tracked state helper');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', 'verify-clean-tree.mjs')), 'Missing official clean tracked state verification script');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'node', 'tests', 'powershell-contracts.test.mjs')), 'Missing dedicated PowerShell contract suite');
+check(existsSync(join(repoRoot, 'docs', 'START_HERE.md')), 'Missing start-here onboarding document');
+check(existsSync(join(repoRoot, 'docs', 'REFERENCE.md')), 'Missing reference layer document');
 check(existsSync(join(repoRoot, 'docs', 'OPTIONAL_CAPABILITIES.md')), 'Missing optional capabilities contract document');
 check(existsSync(join(repoRoot, 'docs', 'PACKAGE_BOUNDARY.md')), 'Missing package boundary contract document');
 check(existsSync(join(repoRoot, 'docs', 'DISTRIBUTION.md')), 'Missing distribution contract document');
@@ -145,6 +150,42 @@ check(existsSync(join(repoRoot, '.Systematize', 'extension-packages', 'export', 
 check(existsSync(join(repoRoot, '.Systematize', 'extension-packages', 'analytics', 'extension.json')), 'Missing analytics extension package');
 check(existsSync(join(repoRoot, '.Systematize', 'extension-packages', 'alerts', 'extension.json')), 'Missing alerts extension package');
 check(existsSync(join(repoRoot, '.Systematize', 'extension-packages', 'taskstoissues', 'extension.json')), 'Missing taskstoissues extension package');
+
+const startHereContent = existsSync(join(repoRoot, 'docs', 'START_HERE.md'))
+  ? read('docs/START_HERE.md')
+  : '';
+check(startHereContent.includes('/syskit.guide'), 'Start-here document no longer points to /syskit.guide');
+check(startHereContent.includes('/syskit.init'), 'Start-here document no longer covers /syskit.init');
+check(startHereContent.includes('/syskit.quickstart'), 'Start-here document no longer covers /syskit.quickstart');
+check(startHereContent.includes('/syskit.systematize'), 'Start-here document no longer covers /syskit.systematize');
+check(
+  startHereContent.includes('| الأمر | متى أستخدمه؟ | ما الفرق؟ | هل هو إلزامي أم اختياري؟ |'),
+  'Start-here document no longer contains the single decision table'
+);
+check(startHereContent.includes('docs/REFERENCE.md'), 'Start-here document no longer points to the reference layer');
+
+const referenceLayerContent = existsSync(join(repoRoot, 'docs', 'REFERENCE.md'))
+  ? read('docs/REFERENCE.md')
+  : '';
+for (const referencePath of [
+  'docs/ARCHITECTURE.md',
+  'docs/PACKAGE_BOUNDARY.md',
+  'docs/OPTIONAL_CAPABILITIES.md',
+  'docs/DISTRIBUTION.md',
+  'docs/policies/README.md'
+]) {
+  check(referenceLayerContent.includes(referencePath), `Reference layer no longer links to ${referencePath}`);
+}
+
+for (const referenceDoc of [
+  'docs/ARCHITECTURE.md',
+  'docs/PACKAGE_BOUNDARY.md',
+  'docs/OPTIONAL_CAPABILITIES.md',
+  'docs/DISTRIBUTION.md',
+  'docs/policies/README.md'
+]) {
+  check(read(referenceDoc).includes('docs/START_HERE.md'), `Reference document no longer points back to docs/START_HERE.md: ${referenceDoc}`);
+}
 
 const extractedPolicyMap = {
   'commands/syskit.systematize.md': 'docs/policies/systematize-policy.md',
@@ -316,6 +357,20 @@ const quickstartContent = read('commands/syskit.quickstart.md');
 check(!quickstartContent.includes('Generate `plan.md`'), 'Quickstart still generates plan.md');
 check(quickstartContent.includes('/syskit.constitution'), 'Quickstart no longer hands off to /syskit.constitution');
 check(quickstartContent.includes('/syskit.research'), 'Quickstart no longer hands off to /syskit.research');
+check(quickstartContent.includes('المسار السريع'), 'Quickstart command no longer presents itself as the quick path');
+
+const guideContent = read('commands/syskit.guide.md');
+check(guideContent.includes('المدخل التوجيهي الرسمي'), 'Guide command no longer presents itself as the official guidance entry');
+check(guideContent.includes('ليس طبقة حوكمة جديدة'), 'Guide command no longer states that it is not a new governance layer');
+check(guideContent.includes('ليس محرك قرار مستقل'), 'Guide command no longer states that it is not an independent decision engine');
+check(guideContent.includes('لا يكتب حالة جديدة'), 'Guide command no longer states that it does not write new state');
+check(guideContent.includes('لا يغير العقود'), 'Guide command no longer states that it does not change contracts');
+
+const initCommandContent = read('commands/syskit.init.md');
+check(initCommandContent.includes('التهيئة الأولى'), 'Init command no longer presents itself as the first-time initialization path');
+
+const systematizeCommandContent = read('commands/syskit.systematize.md');
+check(systematizeCommandContent.includes('المسار الكامل'), 'Systematize command no longer presents itself as the default full path');
 
 check(
   existsSync(join(repoRoot, '.Systematize', 'templates', 'overrides', '.gitkeep')),

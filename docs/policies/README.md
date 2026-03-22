@@ -1,5 +1,13 @@
 # Governance Policy Layer
 
+> هذه وثيقة مرجعية.
+>
+> للبداية التشغيلية:
+>
+> ```text
+> docs/START_HERE.md
+> ```
+
 This directory contains the extracted heavy governance policies that were previously embedded directly inside the command surface files.
 
 ## Purpose

@@ -16,6 +16,13 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Surface Role
+
+- **المسار السريع**: هذا الأمر هو المسار المختصر للميزات الصغيرة والنماذج الأولية.
+- ليس هو نقطة البداية الافتراضية.
+- المدخل الرسمي على الأسطح الظاهرة للمستخدم يبقى `/syskit.guide`.
+- استخدمه فقط عندما يكون تقليل النطاق والسرعة مطلوبين صراحة.
+
 ## Pre-Check
 
 1. Count words in `$ARGUMENTS`. If > 500 words, inform the user:

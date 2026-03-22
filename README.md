@@ -2,66 +2,50 @@
 
 إطار حاكم ثقيل للمشروعات البرمجية متعددة المراحل. الهدف ليس جمع أدوات متفرقة، بل فرض عقد تشغيلي واضح يضبط الانتقال من تعريف المشكلة إلى التوضيح والدستور والبحث والتخطيط والمهام ثم التنفيذ والمراجعة.
 
-## الهوية المعمارية
+## أبدأ من أين؟
 
-- طبقة الحوكمة:
-  `commands/*.md`
-- المحرك التنفيذي الرسمي:
-  `.Systematize/scripts/node`
-- طبقة التوافق:
-  `.Systematize/scripts/powershell`
-- طبقة التحكم:
-  `.Systematize/config`
-  و
-  `.Systematize/memory`
-- طبقة السياسات:
-  `docs/policies`
-- طبقة القدرات الاختيارية:
-  `analytics`
-  و
-  `alerts`
-  و
-  `export`
-  و
-  `taskstoissues`
+إذا كان سؤالك الأول هو من أين تبدأ، فابدأ من وثيقة البداية التشغيلية:
 
-## حدود الحزمة
+```text
+docs/START_HERE.md
+```
 
-يوجد حدّان مقصودان للحزمة:
+والمدخل الرسمي الوحيد هو:
 
-- الحزمة الجذرية مخصصة للتحقق والتوليد والاختبارات والوثائق.
-- الحزمة الداخلية داخل:
-  `.Systematize/scripts/node`
-  هي محرك التشغيل الرسمي.
+```text
+/syskit.guide
+```
 
-الشرح الرسمي لحدود الحزمة موجود في:
-`docs/PACKAGE_BOUNDARY.md`
+هذا المسار يختصر القرار الأول ثم يدفع التفاصيل الثقيلة إلى الطبقة المرجعية عند الحاجة.
 
-## القدرات الاختيارية
+## المسار السعيد الافتراضي
 
-العقد الرسمي للقدرات الاختيارية موجود في:
-`docs/OPTIONAL_CAPABILITIES.md`
+ابدأ من:
 
-## طبقة السياسات
+```text
+/syskit.guide
+```
 
-العقد الرسمي لفصل السياسة عن الأمر موجود في:
-`docs/policies/README.md`
+ثم اتبع التوصية الوحيدة التالية.
+
+في المستودع المهيأ يكون المسار الكامل الافتراضي:
+
+```text
+/syskit.systematize -> /syskit.clarify -> /syskit.constitution -> /syskit.research -> /syskit.plan -> /syskit.tasks -> /syskit.review -> /syskit.implement
+```
+
+وإذا لم تكن التهيئة الأولى مكتملة فستكون التوصية الأولى:
+
+```text
+/syskit.init
+```
 
 ## التوزيع الرسمي
-
-العقد الرسمي للتوزيع وبناء الحزمة موجود في:
-`docs/DISTRIBUTION.md`
 
 الأمر الرسمي:
 
 ```text
 npm run package:dist
-```
-
-## أوامر العمل الأساسية
-
-```text
-systematize -> clarify -> constitution -> research -> plan -> tasks -> review -> implement
 ```
 
 ## أوامر التحقق
@@ -115,6 +99,14 @@ git commit
   `docs/COMMAND_RUNTIME_MAP.md`
 - شجرة المشروع الفعلية:
   `docs/_project_tree.json`
+
+## الطبقة المرجعية
+
+للوثائق الثقيلة والمرجعية:
+
+```text
+docs/REFERENCE.md
+```
 
 ## مبدأ التوسع
 
