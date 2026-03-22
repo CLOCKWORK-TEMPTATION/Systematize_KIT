@@ -152,7 +152,6 @@ export function getFeaturePathsEnv(options = {}) {
     HAS_GIT: hasGit(),
     FEATURE_ROOT: featureRoot,
     FEATURES_DIR: featureDir,
-    AMINOOOF_DIR: featureDir,
     FEATURE_DIR: featureDir,
     FEATURE_SYS: join(featureDir, 'sys.md'),
     IMPL_PLAN: join(featureDir, 'plan.md'),
@@ -174,8 +173,6 @@ export function getAllFeatureDirs(repoRoot, options = {}) {
     .sort()
     .map(d => ({ name: d, path: join(featureRoot, d) }));
 }
-
-export const getAllAminooofDirs = getAllFeatureDirs;
 
 export function getDocumentCompletionStatus(filePath, options = {}) {
   if (!existsSync(filePath)) {
