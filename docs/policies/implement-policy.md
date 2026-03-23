@@ -1,20 +1,20 @@
-# Implementation Policy
+# سياسة التنفيذ
 
-This document contains the extracted heavy governance policy for the corresponding command.
+هذه الوثيقة تحتوي على السياسة الحاكمة الثقيلة المستخرجة للأمر المقابل.
 
 ```text
 commands/syskit.implement.md
 ```
 
-The orchestration command should load and follow this policy before producing its output.
+يجب على أمر التنسيق أن يحمّل هذه السياسة ويتبعها قبل إنتاج مخرجاته.
 
 ---
 
-## Extension Hooks Protocol
+## بروتوكول الخطافات
 
-This protocol applies to **both** `hooks.before_implement` and `hooks.after_implement`. The orchestration command invokes this protocol twice: once before starting implementation and once after completion validation.
+هذا البروتوكول ينطبق على الخطافات السابقة للتنفيذ واللاحقة له، ويُستدعى مرة قبل البدء ومرة بعد اكتمال التحقق.
 
-### Procedure
+### الإجراء
 
 1. Check if `.Systematize/config/extensions.yml` exists in the project root.
 2. If it exists, read it and look for entries under the relevant hook key (`hooks.before_implement` or `hooks.after_implement`).
@@ -52,7 +52,7 @@ Wait for the result of the hook command before proceeding.
 
 ---
 
-## Checklist Gate Protocol
+## بروتوكول بوابة القوائم
 
 If `FEATURE_DIR/checklists/` exists:
 
@@ -77,11 +77,11 @@ If `FEATURE_DIR/checklists/` exists:
 
 ---
 
-## Project Setup Verification
+## التحقق من إعداد المشروع
 
 Create/verify ignore files based on actual project setup:
 
-### Detection & Creation Logic
+### منطق الاكتشاف والإنشاء
 
 - `git rev-parse --git-dir 2>/dev/null` succeeds → create/verify `.gitignore`
 - `Dockerfile*` exists or Docker in plan.md → create/verify `.dockerignore`
@@ -95,7 +95,7 @@ Create/verify ignore files based on actual project setup:
 **If ignore file already exists**: Verify it contains essential patterns, append missing critical patterns only.
 **If ignore file missing**: Create with full pattern set for detected technology.
 
-### Common Patterns by Technology
+### الأنماط الشائعة بحسب التقنية
 
 | Technology | Patterns |
 |------------|----------|
@@ -114,7 +114,7 @@ Create/verify ignore files based on actual project setup:
 | R | `.Rproj.user/`, `.Rhistory`, `.RData`, `.Ruserdata`, `*.Rproj`, `packrat/`, `renv/` |
 | Universal | `.DS_Store`, `Thumbs.db`, `*.tmp`, `*.swp`, `.vscode/`, `.idea/` |
 
-### Tool-Specific Patterns
+### الأنماط الخاصة بالأدوات
 
 | Tool | Patterns |
 |------|----------|
@@ -126,7 +126,7 @@ Create/verify ignore files based on actual project setup:
 
 ---
 
-## Smart Task Ordering
+## ترتيب المهام الذكي
 
 1. Parse `tasks.md` structure and extract all task cards.
 2. Analyze `Depends On` field in each task card to build a dependency graph (DAG).
@@ -150,7 +150,7 @@ Create/verify ignore files based on actual project setup:
 
 ---
 
-## Implementation Checkpoints
+## نقاط التحقق أثناء التنفيذ
 
 After completing each Phase/Wave:
 
@@ -174,7 +174,7 @@ After completing each Phase/Wave:
 
 ---
 
-## Rollback Support
+## دعم التراجع
 
 1. Before starting each task, save a snapshot:
    - **PowerShell**: `pwsh -File .Systematize/scripts/powershell/snapshot-artifacts.ps1 -Tag "pre-{TASK_ID}"`
@@ -191,7 +191,7 @@ After completing each Phase/Wave:
 
 ---
 
-## Progress Tracking
+## تتبع التقدم
 
 - Report progress after each completed task with running totals.
 - Maintain a live progress display:

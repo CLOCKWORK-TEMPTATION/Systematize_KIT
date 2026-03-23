@@ -160,12 +160,14 @@
                     "check-alerts.mjs",
                     "check-prerequisites.mjs",
                     "clean-tracked-state.mjs",
+                    "command-runtime-contracts.mjs",
                     "common.mjs",
                     "config-parser.mjs",
                     "configuration.mjs",
                     "create-feature.mjs",
                     "export-dashboard.mjs",
                     "generate-command-runtime-map.mjs",
+                    "generate-command-surface-docs.mjs",
                     "generate-constitution.mjs",
                     "generate-pr.mjs",
                     "generate-project-tree.mjs",
@@ -201,7 +203,8 @@
                     "sync-command-metadata.mjs",
                     "update-agent-context.mjs",
                     "update-sync-state.mjs",
-                    "verify-clean-tree.mjs"
+                    "verify-clean-tree.mjs",
+                    "verify-governing-language.mjs"
                   ],
                   "tests": {
                     "files": [

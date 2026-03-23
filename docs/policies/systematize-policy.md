@@ -1,39 +1,43 @@
-# Systematize Policy
+# سياسة
 
-This document contains the extracted heavy governance policy for the corresponding command.
+هذه الوثيقة تحتوي على السياسة الحاكمة الثقيلة المستخرجة للأمر المقابل.
 
 ```text
 commands/syskit.systematize.md
 ```
 
-The orchestration command should load and follow this policy before producing its output.
+يجب على أمر التنسيق أن يحمّل هذه السياسة ويتبعها قبل إنتاج مخرجاته.
 
 ---
 
-## User Input
+## مدخل المستخدم
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+يجب أخذ مدخل المستخدم في الحسبان قبل المتابعة إذا لم يكن فارغًا.
 
-## Outline
+## المخطط
 
-The text the user typed after `/syskit.systematize` in the triggering message **is** the feature description. Do not ask the user to repeat it unless they provided an empty command.
+النص الذي يكتبه المستخدم بعد الأمر هو وصف الميزة نفسه. لا تطلب منه إعادته إلا إذا كان الأمر فارغًا.
 
-### Governing Principle
+### المبدأ الحاكم
 
 > **The sys (PRD) is NOT a feature description — it is a governing contract** that translates product vision into commitments that are executable, measurable, and reviewable.
 
-A good sys answers five questions:
+وثيقة
+```text
+sys
+```
+الجيدة تجيب عن خمسة أسئلة:
 1. **WHAT** are we building?
 2. **WHY** are we building it?
 3. **WHO** are we building it for?
 4. **HOW** will we know we succeeded?
 5. **WHAT** are we NOT building?
 
-### PRD Creation Rules
+### قواعد إنشاء الوثيقة
 
 1. **Problem before solution** — ALWAYS define the problem before describing features.
 2. **Every requirement must be testable** — if you can't write a test for it, rewrite it.
@@ -61,7 +65,7 @@ A good sys answers five questions:
     - **Comprehensive**: Large feature, multi-team, or regulatory (>4 weeks) → all sections mandatory, exhaustive edge cases, all NFR categories with numeric targets
     - Default to Standard if unclear. Lite PRDs still require: Problem Statement, Scope, FRs, ACs, Quality Audit.
 
-### Execution Steps
+### خطوات التنفيذ
 
 1. **Generate a concise short name** (2-4 words) for the branch:
    - Use action-noun format (e.g., "add-user-auth", "analytics-dashboard")
@@ -249,7 +253,7 @@ A good sys answers five questions:
 
 **NOTE:** The script creates and checks out the new branch before writing.
 
-### Quick Guidelines
+### إرشادات سريعة
 
 - Focus on **WHAT** users need and **WHY** — never HOW to implement.
 - Written for business stakeholders, not developers.
@@ -257,7 +261,7 @@ A good sys answers five questions:
 - **Mandatory sections**: Must be completed for every feature.
 - **Optional sections**: Include only when relevant. Remove entirely if not applicable (don't leave "N/A" placeholders in optional sections).
 
-### For AI Generation
+### إرشادات التوليد
 
 1. **Problem first**: Extract the core problem from the user's description. If they describe a solution, reverse-engineer the problem.
 2. **Make informed guesses**: Use context, industry standards, and common patterns to fill gaps.
@@ -274,7 +278,7 @@ A good sys answers five questions:
 - Authentication: Standard session-based or OAuth2 for web apps
 - Integration patterns: Project-appropriate (REST/GraphQL for web, etc.)
 
-### Common PRD Failures to Avoid
+### الإخفاقات الشائعة التي يجب تجنبها
 
 These are antipatterns — if you catch yourself doing any of these, stop and fix:
 
@@ -284,7 +288,7 @@ These are antipatterns — if you catch yourself doing any of these, stop and fi
 4. ❌ **Claimed success with no indicators** — every KPI must be measurable
 5. ❌ **Missing traceability** — orphaned FRs or ACs break the audit
 
-### Success Metrics Guidelines
+### إرشادات مؤشرات النجاح
 
 Must be: **Measurable**, **Technology-agnostic**, **User-focused**, **Verifiable**.
 
@@ -297,7 +301,7 @@ Must be: **Measurable**, **Technology-agnostic**, **User-focused**, **Verifiable
 
 Context for generation: $ARGUMENTS
 
-## Output
+## المخرجات
 
 - **Primary format**: PRD generation summary in Markdown.
 - **Files created or updated**: New feature `sys.md` and `checklists/requirements.md`.

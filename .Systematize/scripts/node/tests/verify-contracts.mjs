@@ -61,6 +61,10 @@ for (const command of commandCatalog.commands) {
     `Command metadata missing requirement level in ${command.file}`
   );
   check(
+    content.includes(`command_visibility: ${command.visibility}`),
+    `Command metadata missing visibility in ${command.file}`
+  );
+  check(
     content.includes(`command_execution_mode: ${command.execution_mode}`),
     `Command metadata missing execution mode in ${command.file}`
   );
@@ -77,6 +81,10 @@ for (const command of commandCatalog.commands) {
   check(
     runtimeMapContent.includes(`| \`${command.name}\` |`),
     `Runtime map is missing command row for ${command.name}`
+  );
+  check(
+    runtimeMapContent.includes(`| \`${command.name}\` | ${command.family} | ${command.stage} | ${command.requirement_level} | ${command.visibility} | ${command.execution_mode} |`),
+    `Runtime map is missing visibility or execution metadata for ${command.name}`
   );
 }
 
@@ -130,10 +138,11 @@ const initPsContent = read('.Systematize/scripts/powershell/init-syskit.ps1');
 check(initPsContent.includes("Invoke-NodeSyskitCommand -CommandName 'init'"), 'PowerShell init wrapper no longer delegates to Node init');
 
 const readmeContent = read('README.md');
-check(readmeContent.includes('Systematize Framework for Software Project Governance'), 'Root README no longer reflects the framework identity');
+check(readmeContent.includes('## السطح الأول'), 'Root README no longer exposes the generated primary surface');
 check(readmeContent.includes('docs/START_HERE.md'), 'Root README no longer points to the official start-here document');
 check(readmeContent.includes('/syskit.guide'), 'Root README no longer points to the official guidance entry');
 check(readmeContent.includes('docs/REFERENCE.md'), 'Root README no longer points to the reference layer');
+check(!readmeContent.includes('/syskit.quickstart'), 'Root README must not leak optional quickstart onto the primary surface');
 check(existsSync(join(repoRoot, '.Systematize', 'scripts', 'hooks', 'pre-commit')), 'Missing tracked pre-commit hook source');
 const preCommitContent = read('.Systematize/scripts/hooks/pre-commit');
 check(preCommitContent.includes('npm run verify'), 'Pre-commit hook must run the full verify chain');
@@ -159,13 +168,13 @@ const startHereContent = existsSync(join(repoRoot, 'docs', 'START_HERE.md'))
   : '';
 check(startHereContent.includes('/syskit.guide'), 'Start-here document no longer points to /syskit.guide');
 check(startHereContent.includes('/syskit.init'), 'Start-here document no longer covers /syskit.init');
-check(startHereContent.includes('/syskit.quickstart'), 'Start-here document no longer covers /syskit.quickstart');
 check(startHereContent.includes('/syskit.systematize'), 'Start-here document no longer covers /syskit.systematize');
 check(
-  startHereContent.includes('| الأمر | متى أستخدمه؟ | ما الفرق؟ | هل هو إلزامي أم اختياري؟ |'),
-  'Start-here document no longer contains the single decision table'
+  startHereContent.includes('| الأمر | متى أستخدمه؟ | الحالة |'),
+  'Start-here document no longer contains the generated primary decision table'
 );
 check(startHereContent.includes('docs/REFERENCE.md'), 'Start-here document no longer points to the reference layer');
+check(!startHereContent.includes('/syskit.quickstart'), 'Start-here document must not leak optional quickstart onto the primary surface');
 
 const referenceLayerContent = existsSync(join(repoRoot, 'docs', 'REFERENCE.md'))
   ? read('docs/REFERENCE.md')
@@ -211,11 +220,12 @@ check(syskitConfigContent.includes('taskstoissues_enabled:'), 'Root syskit confi
 const rootPackageContent = read('package.json');
 check(rootPackageContent.includes('"package:dist"'), 'Root package.json is missing the distribution packaging script');
 check(rootPackageContent.includes('"verify:clean-tree": "node .Systematize/scripts/node/lib/verify-clean-tree.mjs"'), 'Root package.json is missing the clean tracked state verification script');
+check(rootPackageContent.includes('"verify:language": "node .Systematize/scripts/node/lib/verify-governing-language.mjs"'), 'Root package.json is missing the governing language verification script');
 check(rootPackageContent.includes('"test:powershell": "node --test .Systematize/scripts/node/tests/powershell-contracts.test.mjs"'), 'Root package.json is missing the dedicated PowerShell contract suite');
 check(rootPackageContent.includes('"setup:hooks": "node .Systematize/scripts/node/lib/setup-hooks.mjs"'), 'Root package.json is missing the official hook setup script');
 check(rootPackageContent.includes('"prepare": "npm run setup:hooks"'), 'Root package.json is missing automatic hook installation during package setup');
 check(
-  rootPackageContent.includes('"verify": "npm run test && npm run verify:docs && npm run verify:contracts"'),
+  rootPackageContent.includes('"verify": "npm run test && npm run verify:docs && npm run verify:language && npm run verify:contracts"'),
   'Root verify script no longer remains a check-only verification flow'
 );
 
@@ -226,6 +236,9 @@ check(
 check(
   JSON.stringify(distributionContract.repo_generated_paths) === JSON.stringify([
     'commands',
+    'README.md',
+    'docs/START_HERE.md',
+    'docs/REFERENCE.md',
     'docs/COMMAND_RUNTIME_MAP.md',
     'docs/_project_tree.json'
   ]),

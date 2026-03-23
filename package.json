@@ -8,11 +8,12 @@
     "setup:hooks": "node .Systematize/scripts/node/lib/setup-hooks.mjs",
     "prepare": "npm run setup:hooks",
     "sync:commands": "node .Systematize/scripts/node/lib/sync-command-metadata.mjs",
-    "generate:docs": "npm run sync:commands && node .Systematize/scripts/node/lib/generate-command-runtime-map.mjs && node .Systematize/scripts/node/lib/generate-project-tree.mjs",
-    "verify:docs": "node .Systematize/scripts/node/lib/sync-command-metadata.mjs --check && node .Systematize/scripts/node/lib/generate-command-runtime-map.mjs --check && node .Systematize/scripts/node/lib/generate-project-tree.mjs --check",
+    "generate:docs": "npm run sync:commands && node .Systematize/scripts/node/lib/generate-command-runtime-map.mjs && node .Systematize/scripts/node/lib/generate-command-surface-docs.mjs && node .Systematize/scripts/node/lib/generate-project-tree.mjs",
+    "verify:docs": "node .Systematize/scripts/node/lib/sync-command-metadata.mjs --check && node .Systematize/scripts/node/lib/generate-command-runtime-map.mjs --check && node .Systematize/scripts/node/lib/generate-command-surface-docs.mjs --check && node .Systematize/scripts/node/lib/generate-project-tree.mjs --check",
     "verify:clean-tree": "node .Systematize/scripts/node/lib/verify-clean-tree.mjs",
+    "verify:language": "node .Systematize/scripts/node/lib/verify-governing-language.mjs",
     "verify:contracts": "node .Systematize/scripts/node/tests/verify-contracts.mjs",
-    "verify": "npm run test && npm run verify:docs && npm run verify:contracts",
+    "verify": "npm run test && npm run verify:docs && npm run verify:language && npm run verify:contracts",
     "package:dist": "node .Systematize/scripts/node/cli.mjs build-distribution"
   }
 }

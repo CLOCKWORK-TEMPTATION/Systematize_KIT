@@ -142,10 +142,14 @@ test('distribution contract is explicit and repository-safe', () => {
   assert.deepEqual(contract.prebuild_generators, [
     '.Systematize/scripts/node/lib/sync-command-metadata.mjs',
     '.Systematize/scripts/node/lib/generate-command-runtime-map.mjs',
+    '.Systematize/scripts/node/lib/generate-command-surface-docs.mjs',
     '.Systematize/scripts/node/lib/generate-project-tree.mjs'
   ]);
   assert.deepEqual(contract.repo_generated_paths, [
     'commands',
+    'README.md',
+    'docs/START_HERE.md',
+    'docs/REFERENCE.md',
     'docs/COMMAND_RUNTIME_MAP.md',
     'docs/_project_tree.json'
   ]);
@@ -248,7 +252,7 @@ test('official distribution succeeds from a synchronized repository without muta
     assert.ok(existsSync(result.manifest), 'distribution manifest is missing');
     assert.deepEqual(
       stagedManifest.repo_generated_paths,
-      ['commands', 'docs/COMMAND_RUNTIME_MAP.md', 'docs/_project_tree.json'],
+      ['commands', 'README.md', 'docs/START_HERE.md', 'docs/REFERENCE.md', 'docs/COMMAND_RUNTIME_MAP.md', 'docs/_project_tree.json'],
       'distribution manifest must carry the repository generated path contract into the bundle'
     );
     assert.deepEqual(JSON.parse(runVerifyCleanTree(tempRepo)), {

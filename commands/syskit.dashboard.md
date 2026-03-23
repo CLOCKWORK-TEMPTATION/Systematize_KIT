@@ -4,6 +4,7 @@ command_name: dashboard
 command_family: Portfolio
 command_stage: reporting
 command_requirement_level: optional
+command_visibility: optional
 command_execution_mode: runtime-backed
 runtime_command: export-dashboard
 ---

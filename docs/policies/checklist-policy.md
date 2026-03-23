@@ -1,27 +1,27 @@
-# Checklist Policy
+# سياسة قوائم المراجعة
 
-This document contains the extracted heavy governance policy for the corresponding command.
+هذه الوثيقة تحتوي على السياسة الحاكمة الثقيلة المستخرجة للأمر المقابل.
 
 ```text
 commands/syskit.checklist.md
 ```
 
-The orchestration command should load and follow this policy before producing its output.
+يجب على أمر التنسيق أن يحمّل هذه السياسة ويتبعها قبل إنتاج مخرجاته.
 
 ---
 
-## Checklist Purpose: "Unit Tests for English"
+## غرض قائمة المراجعة
 
-**CRITICAL CONCEPT**: Checklists are **UNIT TESTS FOR REQUIREMENTS WRITING** — they validate the quality, clarity, and completeness of requirements in a given domain.
+الفكرة الحاكمة هنا أن قوائم المراجعة هي اختبارات جودة للمتطلبات المكتوبة، وليست اختبارات لسلوك التنفيذ نفسه.
 
-**NOT for verification/testing**:
+## ما الذي لا تفعله هذه القوائم
 
 - ❌ NOT "Verify the button clicks correctly"
 - ❌ NOT "Test error handling works"
 - ❌ NOT "Confirm the API returns 200"
 - ❌ NOT checking if code/implementation matches the sys
 
-**FOR requirements quality validation**:
+## ما الذي تفعله هذه القوائم
 
 - ✅ "Are visual hierarchy requirements defined for all card types?" (completeness)
 - ✅ "Is 'prominent display' quantified with specific sizing/positioning?" (clarity)
@@ -29,19 +29,19 @@ The orchestration command should load and follow this policy before producing it
 - ✅ "Are accessibility requirements defined for keyboard navigation?" (coverage)
 - ✅ "Does the sys define what happens when logo image fails to load?" (edge cases)
 
-**Metaphor**: If your sys is code written in English, the checklist is its unit test suite. You're testing whether the requirements are well-written, complete, unambiguous, and ready for implementation — NOT whether the implementation works.
+إذا كانت وثيقة المتطلبات نصًا حاكمًا، فالقائمة هي طبقة فحص لجودة هذا النص من حيث الاكتمال والوضوح وقابلية التنفيذ.
 
 ---
 
-## Clarify Intent Algorithm
+## خوارزمية توضيح النية
 
-Derive up to THREE initial contextual clarifying questions (no pre-baked catalog). They MUST:
+اشتق حتى ثلاثة أسئلة توضيحية سياقية أولية من دون أي قائمة جاهزة مسبقًا. ويجب أن:
 - Be generated from the user's phrasing + extracted signals from sys/plan/tasks
 - Only ask about information that materially changes checklist content
 - Be skipped individually if already unambiguous in `$ARGUMENTS`
 - Prefer precision over breadth
 
-### Generation Steps
+### خطوات التوليد
 
 1. Extract signals: feature domain keywords (e.g., auth, latency, UX, API), risk indicators ("critical", "must", "compliance"), stakeholder hints ("QA", "review", "security team"), and explicit deliverables ("a11y", "rollback", "contracts").
 2. Cluster signals into candidate focus areas (max 4) ranked by relevance.
@@ -55,28 +55,28 @@ Derive up to THREE initial contextual clarifying questions (no pre-baked catalog
    - Boundary exclusion (e.g., "Should we explicitly exclude performance tuning items this round?")
    - Scenario class gap (e.g., "No recovery flows detected—are rollback / partial failure paths in scope?")
 
-### Question Formatting Rules
+### قواعد تنسيق الأسئلة
 
 - If presenting options, generate a compact table with columns: Option | Candidate | Why It Matters
 - Limit to A–E options maximum; omit table if a free-form answer is clearer
 - Never ask the user to restate what they already said
 - Avoid speculative categories (no hallucination). If uncertain, ask explicitly: "Confirm whether X belongs in scope."
 
-### Defaults When Interaction Impossible
+### القيم الافتراضية عند تعذر التفاعل
 
 - Depth: Standard
 - Audience: Reviewer (PR) if code-related; Author otherwise
 - Focus: Top 2 relevance clusters
 
-### Follow-Up Escalation
+### التصعيد اللاحق
 
 Output the questions (label Q1/Q2/Q3). After answers: if ≥2 scenario classes (Alternate / Exception / Recovery / Non-Functional domain) remain unclear, you MAY ask up to TWO more targeted follow‑ups (Q4/Q5) with a one-line justification each (e.g., "Unresolved recovery path risk"). Do not exceed five total questions. Skip escalation if user explicitly declines more.
 
 ---
 
-## Checklist Writing Guide
+## دليل كتابة القائمة
 
-### Core Principle — Test the Requirements, Not the Implementation
+### المبدأ الأساسي
 
 Every checklist item MUST evaluate the REQUIREMENTS THEMSELVES for:
 - **Completeness**: Are all necessary requirements present?
@@ -85,7 +85,7 @@ Every checklist item MUST evaluate the REQUIREMENTS THEMSELVES for:
 - **Measurability**: Can requirements be objectively verified?
 - **Coverage**: Are all scenarios/edge cases addressed?
 
-### Category Structure
+### بنية التصنيف
 
 Group items by requirement quality dimensions:
 - **Requirement Completeness** (Are all necessary requirements documented?)
@@ -98,7 +98,7 @@ Group items by requirement quality dimensions:
 - **Dependencies & Assumptions** (Are they documented and validated?)
 - **Ambiguities & Conflicts** (What needs clarification?)
 
-### Item Structure
+### بنية العنصر
 
 Each item should follow this pattern:
 - Question format asking about requirement quality
@@ -107,7 +107,7 @@ Each item should follow this pattern:
 - Reference sys section `[Sys §X.Y]` when checking existing requirements
 - Use `[Gap]` marker when checking for missing requirements
 
-### Examples by Quality Dimension
+### أمثلة بحسب بُعد الجودة
 
 **Completeness:**
 - "Are error handling requirements defined for all API failure modes? [Gap]"
@@ -132,20 +132,20 @@ Each item should follow this pattern:
 - "Are visual hierarchy requirements measurable/testable? [Acceptance Criteria, Sys §FR-1]"
 - "Can 'balanced visual weight' be objectively verified? [Measurability, Sys §FR-2]"
 
-### Scenario Classification & Coverage
+### تصنيف السيناريوهات والتغطية
 
 - Check if requirements exist for: Primary, Alternate, Exception/Error, Recovery, Non-Functional scenarios
 - For each scenario class, ask: "Are [scenario type] requirements complete, clear, and consistent?"
 - If scenario class missing: "Are [scenario type] requirements intentionally excluded or missing? [Gap]"
 - Include resilience/rollback when state mutation occurs: "Are rollback requirements defined for migration failures? [Gap]"
 
-### Traceability Requirements
+### متطلبات التتبع
 
 - MINIMUM: ≥80% of items MUST include at least one traceability reference
 - Each item should reference: sys section `[Sys §X.Y]`, or use markers: `[Gap]`, `[Ambiguity]`, `[Conflict]`, `[Assumption]`
 - If no ID system exists: "Is a requirement & acceptance criteria ID scheme established? [Traceability]"
 
-### Surface & Resolve Issues
+### إظهار المشكلات ومعالجتها
 
 Ask questions about the requirements themselves:
 - Ambiguities: "Is the term 'fast' quantified with specific metrics? [Ambiguity, Sys §NFR-1]"
@@ -154,13 +154,13 @@ Ask questions about the requirements themselves:
 - Dependencies: "Are external podcast API requirements documented? [Dependency, Gap]"
 - Missing definitions: "Is 'visual hierarchy' defined with measurable criteria? [Gap]"
 
-### Content Consolidation
+### دمج المحتوى
 
 - Soft cap: If raw candidate items > 40, prioritize by risk/impact
 - Merge near-duplicates checking the same requirement aspect
 - If >5 low-impact edge cases, create one item: "Are edge cases X, Y, Z addressed in requirements? [Coverage]"
 
-### Prohibited Patterns
+### الأنماط الممنوعة
 
 🚫 ABSOLUTELY PROHIBITED — These make it an implementation test, not a requirements test:
 - ❌ Any item starting with "Verify", "Test", "Confirm", "Check" + implementation behavior
@@ -170,7 +170,7 @@ Ask questions about the requirements themselves:
 - ❌ Test cases, test plans, QA procedures
 - ❌ Implementation details (frameworks, APIs, algorithms)
 
-### Required Patterns
+### الأنماط المطلوبة
 
 ✅ REQUIRED PATTERNS — These test requirements quality:
 - ✅ "Are [requirement type] defined/specified/documented for [scenario]?"
@@ -182,7 +182,7 @@ Ask questions about the requirements themselves:
 
 ---
 
-## Example Checklist Types & Sample Items
+## أنواع القوائم وأمثلة العناصر
 
 **UX Requirements Quality:** `ux.md`
 
@@ -227,7 +227,7 @@ Sample items:
 
 ---
 
-## Anti-Examples: What NOT To Do
+## أمثلة مضادة
 
 **❌ WRONG — These test implementation, not requirements:**
 

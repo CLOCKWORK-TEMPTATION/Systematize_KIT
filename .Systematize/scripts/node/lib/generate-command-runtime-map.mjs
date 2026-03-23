@@ -16,19 +16,23 @@ function applyLineEnding(content, lineEnding) {
   return content.replace(/\n/g, lineEnding);
 }
 
+function ensureSingleTrailingNewline(content, lineEnding) {
+  return `${content.replace(/(?:\r?\n)+$/u, '')}${lineEnding}`;
+}
+
 function buildMarkdown(catalog) {
   const lines = [
     '# خريطة الربط بين الحوكمة والمحرك',
     '',
-    `المرجع الرسمي لتصنيف أوامر ${catalog.product_name}.`,
+    'المرجع الرسمي لتصنيف أوامر الإطار الحاكم.',
     '',
-    '| الأمر | العائلة | المرحلة | الإلزام | نمط التنفيذ | الإسناد التنفيذي | الملاحظة |',
-    '| --- | --- | --- | --- | --- | --- | --- |'
+    '| الأمر | العائلة | المرحلة | الإلزام | الظهور | نمط التنفيذ | الإسناد التنفيذي | الملاحظة |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- |'
   ];
 
   for (const command of catalog.commands) {
     lines.push(
-      `| \`${command.name}\` | ${command.family} | ${command.stage} | ${command.requirement_level} | ${command.execution_mode} | ${command.runtime_command || '—'} | ${command.notes} |`
+      `| \`${command.name}\` | ${command.family} | ${command.stage} | ${command.requirement_level} | ${command.visibility} | ${command.execution_mode} | ${command.runtime_command || '—'} | ${command.notes} |`
     );
   }
 
@@ -36,8 +40,15 @@ function buildMarkdown(catalog) {
     '',
     '## تفسير الأنماط',
     '',
-    '- `runtime-backed`: أمر حوكمي أو تقريري مرتبط بأمر فعلي داخل محرك Node.',
+    '- `runtime-backed`: أمر حوكمي أو تقريري يملك جسرًا تنفيذيًا حتميًا داخل المحرك ويصدر قرار قبول أو رفض قابلًا للتحقق.',
+    '- `strong-hybrid`: أمر يبقي المحتوى التوليدي جزئيًا، لكن الإدخال والمسارات والتحقق والرفض النهائي محكومة بعقد تنفيذي صارم داخل المحرك.',
     '- `hybrid`: أمر يجمع بين فرض تنفيذي runtime وإنتاج توليدي — المدخلات والمخرجات والبوابات مفروضة تنفيذيًا.',
+    '',
+    '## طبقات الظهور',
+    '',
+    '- `primary`: يظهر على السطح الأول وبدايات الاستخدام.',
+    '- `operational`: يظهر في السطح التشغيلي اليومي بعد فهم المسار.',
+    '- `optional`: يبقى في الطبقة المرجعية أو الاختيارية ولا يتسرب إلى نقطة البداية.',
     '',
     '## تفسير العائلات',
     ''
@@ -54,16 +65,19 @@ function buildMarkdown(catalog) {
 const shouldCheck = process.argv.includes('--check');
 const current = existsSync(outputPath) ? readFileSync(outputPath, 'utf8') : '';
 const lineEnding = detectLineEnding(current);
-const expected = applyLineEnding(buildMarkdown(JSON.parse(readFileSync(catalogPath, 'utf8'))), lineEnding);
+const expected = ensureSingleTrailingNewline(
+  applyLineEnding(buildMarkdown(JSON.parse(readFileSync(catalogPath, 'utf8'))), lineEnding),
+  lineEnding
+);
 
 if (shouldCheck) {
-  if (current.trimEnd() !== expected.trimEnd()) {
+  if (current !== expected) {
     console.error(`Generated command runtime map is out of date: ${outputPath}`);
     process.exit(1);
   }
 
   console.log('Command runtime map is up to date.');
 } else {
-  writeFileSync(outputPath, `${expected}${lineEnding}`, 'utf8');
+  writeFileSync(outputPath, expected, 'utf8');
   console.log(`Generated ${outputPath}`);
 }

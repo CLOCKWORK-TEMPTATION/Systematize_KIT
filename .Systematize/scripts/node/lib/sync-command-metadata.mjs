@@ -24,6 +24,7 @@ function buildMetadataLines(command) {
     `command_family: ${command.family}`,
     `command_stage: ${command.stage}`,
     `command_requirement_level: ${command.requirement_level}`,
+    `command_visibility: ${command.visibility}`,
     `command_execution_mode: ${command.execution_mode}`,
     `runtime_command: ${command.runtime_command ?? 'null'}`
   ];
@@ -46,6 +47,7 @@ function syncCommandFrontmatter(relativePath, metadataLines) {
       'command_family:',
       'command_stage:',
       'command_requirement_level:',
+      'command_visibility:',
       'command_execution_mode:',
       'runtime_command:'
     ].some((prefix) => trimmed.startsWith(prefix));

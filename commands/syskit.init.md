@@ -4,6 +4,7 @@ command_name: init
 command_family: Admin
 command_stage: bootstrap
 command_requirement_level: mandatory
+command_visibility: primary
 command_execution_mode: runtime-backed
 runtime_command: init
 ---

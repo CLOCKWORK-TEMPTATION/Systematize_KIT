@@ -1,30 +1,34 @@
-# Research Policy
+# سياسة البحث
 
-This document contains the extracted heavy governance policy for the corresponding command.
+هذه الوثيقة تحتوي على السياسة الحاكمة الثقيلة المستخرجة للأمر المقابل.
 
 ```text
 commands/syskit.research.md
 ```
 
-The orchestration command should load and follow this policy before producing its output.
+يجب على أمر التنسيق أن يحمّل هذه السياسة ويتبعها قبل إنتاج مخرجاته.
 
 ---
 
-## User Input
+## مدخل المستخدم
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+يجب أخذ مدخل المستخدم في الحسبان قبل المتابعة إذا لم يكن فارغًا.
 
 ---
 
-## Goal
+## الهدف
 
-Generate a **deep research plan** for a feature concept, then **execute the research** following a 5-phase methodology, and produce a complete `research.md` document that enables an informed go/no-go decision before proceeding to `/syskit.plan`.
+الهدف هو إعداد خطة بحث عميقة للمفهوم ثم تنفيذها عبر منهجية من خمس مراحل لإنتاج وثيقة
+```text
+research.md
+```
+كاملة تدعم قرار المتابعة أو التوقف قبل الانتقال إلى التخطيط.
 
-The research covers 7 question categories:
+يغطي البحث سبع فئات من الأسئلة:
 1. **Problem Questions** — Is the problem real, significant, and worth solving?
 2. **User & Behavior Questions** — Who is affected, how do they behave today?
 3. **Market & Alternatives Questions** — What exists, what's the competitive landscape?
@@ -33,7 +37,7 @@ The research covers 7 question categories:
 6. **Risk & Constraint Questions** — What could go wrong, what limits us?
 7. **Decision Questions** — What must be true for us to proceed?
 
-The research follows 5 methodology phases:
+ويتبع البحث خمس مراحل منهجية:
 - **Phase A**: Question Decomposition — break down the core question into research axes
 - **Phase B**: Initial Survey — build a landscape map, discover gaps
 - **Phase C**: Evidence Deepening — collect direct evidence, test hypotheses
@@ -44,7 +48,7 @@ This command runs **after** `/syskit.constitution` in the standard workflow: `/s
 
 ---
 
-## Operating Constraints
+## القيود الحاكمة
 
 **Constitution Authority**: `.Systematize/memory/constitution.md` is non-negotiable. Research must not contradict constitution governing rules.
 
@@ -62,9 +66,9 @@ This command runs **after** `/syskit.constitution` in the standard workflow: `/s
 
 ---
 
-## Execution Steps
+## خطوات التنفيذ
 
-### Phase 1 — Initialize Research Context
+### المرحلة الأولى: تهيئة سياق البحث
 
 Run the prerequisites check script from repo root. Parse JSON for `FEATURE_DIR` and `AVAILABLE_DOCS`. Derive absolute paths:
    - **PowerShell**: `pwsh -File .Systematize/scripts/powershell/check-prerequisites.ps1 -Json`
@@ -82,7 +86,7 @@ For arguments with single quotes, use escape syntax: `'I'\''m Groot'` or double-
 
 ---
 
-### Phase 2 — Extract Research Inputs
+### المرحلة الثانية: استخراج مدخلات البحث
 
 **If sys.md exists, extract:**
 - Problem Statement (§1.2)
@@ -104,7 +108,7 @@ If `sys.md` is missing or the constitution is incomplete, fail instead of invent
 
 ---
 
-### Phase 3 — Generate Research Plan (Sections 1–10)
+### المرحلة الثالثة: توليد خطة البحث
 
 Read `.Systematize/templates/research-template.md` and fill sections 1–10:
 
@@ -167,7 +171,7 @@ Read `.Systematize/templates/research-template.md` and fill sections 1–10:
 
 ---
 
-### Phase 4 — Execute Research (Methodology Phases A–E)
+### المرحلة الرابعة: تنفيذ البحث
 
 Execute the research following the methodology defined in §8:
 
@@ -207,7 +211,7 @@ Execute the research following the methodology defined in §8:
 
 ---
 
-### Phase 5 — Fill Research Report (Sections 11–12)
+### المرحلة الخامسة: تعبئة تقرير البحث
 
 Fill the output sections of research.md:
 
@@ -231,7 +235,7 @@ Fill the output sections of research.md:
 
 ---
 
-### Phase 6 — Write and Report
+### المرحلة السادسة: الكتابة والتقرير
 
 1. Write the complete research.md to FEATURE_DIR/research.md
 2. Report to user:
@@ -248,36 +252,36 @@ Fill the output sections of research.md:
 
 ---
 
-## Rules
+## القواعد
 
-### Research Plan Quality
+### جودة خطة البحث
 - Every research question must be specific and answerable
 - Every hypothesis must be testable
 - Scope boundaries must be explicit
 - The core research question must be ONE sentence
 
-### Research Execution Quality
+### جودة تنفيذ البحث
 - Every claim must have a source citation or be marked as inference
 - Distinguish between FACT, CONCLUSION, and SPECULATION
 - When sources conflict, report the conflict
 - Prioritize primary sources over secondary
 - State confidence levels honestly
 
-### Report Quality
+### جودة التقرير
 - Every research question from §4 must have an answer in §11.3
 - Every hypothesis from §5 must have a result in §11.5
 - The verdict must be justified with specific evidence
 - The recommendation must be actionable
 - Unknown gaps must be explicitly stated
 
-### Integration Rules
+### قواعد الدمج
 - `ASM-XXX` assumptions from sys.md become testable hypotheses
 - `RK-XXX` risks from sys.md are validated or updated
 - NEEDS CLARIFICATION markers from sys.md and constitution-derived assumptions become mandatory research targets
 - Research findings feed directly into `/syskit.plan` drafting decisions
 - New risks discovered → feed into sys.md Risk Registry and plan.md Risk Registry
 
-### Token Efficiency
+### كفاءة السياق
 - Do not dump raw source material — synthesize
 - Limit evidence table to top 20 most relevant sources
 - Research question answers should be concise (2-4 sentences each)
@@ -285,31 +289,31 @@ Fill the output sections of research.md:
 
 ---
 
-## Operating Principles
+## المبادئ التشغيلية
 
-### Evidence Integrity
+### سلامة الأدلة
 - **NEVER fabricate sources** — if you can't find evidence, say so
 - **NEVER hide contradictions** between sources
 - **NEVER overstate confidence** — "I don't know" is a valid and valuable finding
 - **ALWAYS cite sources** for non-obvious claims
 
-### Research Discipline
+### انضباط البحث
 - **NEVER drift into implementation** during research
 - **NEVER accept assumptions blindly** — test them
 - **ALWAYS answer the core research question** — don't get sidetracked
 - **ALWAYS test the riskiest assumption** — this is the highest priority
 
-### Decision Focus
+### تركيز القرار
 - Research exists to ENABLE A DECISION, not to collect information
 - Every finding must connect to a research question
 - Every conclusion must state its confidence level
 - The final verdict must be clear and actionable
 
-## Context
+## السياق
 
 $ARGUMENTS
 
-## Output
+## المخرجات
 
 - **Primary format**: Research execution summary in Markdown.
 - **Files created or updated**: `research.md`.

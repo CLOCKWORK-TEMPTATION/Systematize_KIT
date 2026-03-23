@@ -4,6 +4,7 @@ command_name: analyze
 command_family: Inspection
 command_stage: deep-inspection
 command_requirement_level: optional
+command_visibility: optional
 command_execution_mode: hybrid
 runtime_command: setup-analyze
 handoffs:

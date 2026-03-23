@@ -1,18 +1,18 @@
-# Clarification Policy
+# سياسة التوضيح
 
-This document contains the extracted heavy governance policy for the corresponding command.
+هذه الوثيقة تحتوي على السياسة الحاكمة الثقيلة المستخرجة للأمر المقابل.
 
 ```text
 commands/syskit.clarify.md
 ```
 
-The orchestration command should load and follow this policy before producing its output.
+يجب على أمر التنسيق أن يحمّل هذه السياسة ويتبعها قبل إنتاج مخرجاته.
 
 ---
 
-## Governing Principles
+## المبادئ الحاكمة
 
-These principles are **non-negotiable** and govern every decision in this phase:
+هذه المبادئ غير قابلة للتفاوض، وهي التي تحكم كل قرار في هذه المرحلة:
 
 1. **Clarification is for resolving ambiguity that blocks correct execution** — not for collecting information randomly or extending dialogue.
 2. **Only ask about what changes an engineering decision** — a question is valid ONLY if its answer materially impacts design, architecture, behavior, constraints, or priorities.
@@ -31,13 +31,13 @@ These principles are **non-negotiable** and govern every decision in this phase:
 12. **Good clarification reduces rework** — success is measured by reduction in: returning to user later, repeated modifications, misunderstandings, deviation from requirements.
 13. **The phase ends with a mini execution contract** — the output must clearly define: what is required, what is not required, constraints, assumptions, and success criteria.
 
-### Escalation Rule
+### قاعدة التصعيد
 
 > **MANDATORY**: If answering a question would change the architecture, threaten functional safety, or invalidate a mandatory constraint — you MUST NOT assume. You MUST escalate to the user immediately regardless of the question quota.
 
 ---
 
-## Ambiguity & Coverage Scan Taxonomy
+## تصنيف فحص الغموض والتغطية
 
 Perform a structured scan of the sys using this taxonomy. For each category, mark status: Clear / Partial / Missing.
 
@@ -61,7 +61,7 @@ For each Partial or Missing category, generate a candidate question ONLY if (per
 
 ---
 
-## Unknown Classification
+## تصنيف المجهولات
 
 Classify unknowns before generating questions:
 
@@ -75,7 +75,7 @@ Classify unknowns before generating questions:
 
 ---
 
-## Question Generation Rules
+## قواعد توليد الأسئلة
 
 - Maximum 5 total questions across the session.
 - Each question must be answerable with EITHER:
@@ -88,7 +88,7 @@ Classify unknowns before generating questions:
 
 ---
 
-## Sequential Questioning Loop
+## حلقة الاستيضاح المتسلسلة
 
 Present EXACTLY ONE question at a time.
 
@@ -131,7 +131,7 @@ If during the loop you discover an answer would change architecture or threaten 
 
 ---
 
-## Integration After Each Accepted Answer
+## الدمج بعد كل إجابة مقبولة
 
 1. First answer in session → ensure `## Clarification Contract` section exists in sys. Under `### Critical Questions Resolved`, create `#### Session YYYY-MM-DD` if not present.
 2. Append: `- Q: <question> → A: <answer> → Impact: <section/decision affected>`
@@ -148,7 +148,7 @@ If during the loop you discover an answer would change architecture or threaten 
 
 ---
 
-## Clarification Contract
+## عقد التوضيح
 
 Fill the `## Clarification Contract` section in the sys with:
 
@@ -164,7 +164,7 @@ The Clarification Contract is the mandatory output of this phase. It is the "min
 
 ---
 
-## Validation Rules
+## قواعد التحقق
 
 After each write and during final pass:
 
@@ -179,7 +179,7 @@ After each write and during final pass:
 
 ---
 
-## Behavior Rules
+## قواعد السلوك
 
 - If no meaningful ambiguities found → respond: "No critical ambiguities detected. Clarification Contract populated with inferred values." Fill the contract with inferred data and suggest proceeding.
 - If sys file missing → instruct user to run `/syskit.systematize` first.
@@ -191,7 +191,7 @@ After each write and during final pass:
 
 ---
 
-## Before/After Examples
+## أمثلة قبل وبعد
 
 **Bad question** (violates Principle 3 — can be inferred):
 > "What programming language should we use?" — when the repo is clearly TypeScript.

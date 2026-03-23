@@ -4,6 +4,7 @@ command_name: quickstart
 command_family: Admin
 command_stage: onboarding
 command_requirement_level: optional
+command_visibility: optional
 command_execution_mode: hybrid
 runtime_command: setup-quickstart
 ---

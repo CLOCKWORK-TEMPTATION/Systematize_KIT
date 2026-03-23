@@ -4,7 +4,8 @@ command_name: checklist
 command_family: Gate
 command_stage: phase-07
 command_requirement_level: conditional
-command_execution_mode: hybrid
+command_visibility: optional
+command_execution_mode: runtime-backed
 runtime_command: setup-checklist
 handoffs:
   - label: Analyze For Consistency

@@ -4,6 +4,7 @@ command_name: plan
 command_family: Gate
 command_stage: phase-05
 command_requirement_level: mandatory
+command_visibility: primary
 command_execution_mode: runtime-backed
 runtime_command: setup-plan
 handoffs: 

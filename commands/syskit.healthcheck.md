@@ -4,6 +4,7 @@ command_name: healthcheck
 command_family: Inspection
 command_stage: inspection
 command_requirement_level: mandatory
+command_visibility: operational
 command_execution_mode: runtime-backed
 runtime_command: healthcheck
 handoffs:

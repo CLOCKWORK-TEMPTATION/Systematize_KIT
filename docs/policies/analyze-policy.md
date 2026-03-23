@@ -1,30 +1,30 @@
-# Analysis Policy
+# سياسة التحليل
 
-This document contains the extracted heavy governance policy for the corresponding command.
+هذه الوثيقة تحتوي على السياسة الحاكمة الثقيلة المستخرجة للأمر المقابل.
 
 ```text
 commands/syskit.analyze.md
 ```
 
-The orchestration command should load and follow this policy before producing its output.
+يجب على أمر التنسيق أن يحمّل هذه السياسة ويتبعها قبل إنتاج مخرجاته.
 
 ---
 
-## User Input
+## مدخل المستخدم
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+يجب أخذ مدخل المستخدم في الحسبان قبل المتابعة إذا لم يكن فارغًا.
 
 ---
 
-## Goal
+## الهدف
 
-Deliver a **4-domain, 30+ analysis-type** deep analysis of all core artifacts (`sys.md`, `plan.md`, `tasks.md`) through the lens of **Semantic Context Units (SCUs)** — grounded in requirements engineering quality attributes, domain-driven design boundary analysis, and governance traceability.
+الهدف هو تقديم تحليل عميق متعدد المجالات للوثائق الأساسية عبر عدسة وحدات السياق الدلالية مع ربط النتائج بجودة المتطلبات وحدود المجال والتتبع الحاكم.
 
-### The 4 Analysis Domains
+### مجالات التحليل الأربعة
 
 | # | Domain | Scope | Count |
 |---|--------|-------|-------|
@@ -33,9 +33,13 @@ Deliver a **4-domain, 30+ analysis-type** deep analysis of all core artifacts (`
 | 3 | **Boundaries & Dependencies** | Dependency graph, context boundary, interface contracts, cross-context translation, context transition, read/write separation, reporting leakage, cohesion/coupling, impact radius | 9 |
 | 4 | **Execution & Governance** | Traceability matrix, evidence linkage, priority alignment, test scenario coverage, negative constraints, CRUD/lifecycle, change-control readiness, criticality/risk annotation | 8 |
 
-### SCU Definition
+### تعريف الوحدة
 
-Each SCU is a self-contained, atomic unit with:
+كل
+```text
+SCU
+```
+يجب أن يكون وحدة مكتفية بذاتها وذرية وفق البنية الآتية:
 
 ```
 SCU {

@@ -4,7 +4,8 @@ command_name: implement
 command_family: Gate
 command_stage: phase-09
 command_requirement_level: mandatory
-command_execution_mode: hybrid
+command_visibility: primary
+command_execution_mode: strong-hybrid
 runtime_command: setup-implement
 handoffs:
   - label: Convert Tasks to GitHub Issues

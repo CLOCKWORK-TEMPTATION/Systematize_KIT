@@ -4,6 +4,7 @@ command_name: constitution
 command_family: Gate
 command_stage: phase-03
 command_requirement_level: mandatory
+command_visibility: primary
 command_execution_mode: runtime-backed
 runtime_command: generate-constitution
 handoffs: 

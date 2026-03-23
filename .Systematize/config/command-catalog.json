@@ -18,7 +18,8 @@
       "family": "Gate",
       "stage": "phase-01",
       "requirement_level": "mandatory",
-      "execution_mode": "hybrid",
+      "execution_mode": "strong-hybrid",
+      "visibility": "primary",
       "runtime_command": "setup-systematize",
       "notes": "العقد الحاكم الأول لصياغة وثيقة sys."
     },
@@ -28,7 +29,8 @@
       "family": "Gate",
       "stage": "phase-02",
       "requirement_level": "mandatory",
-      "execution_mode": "hybrid",
+      "execution_mode": "strong-hybrid",
+      "visibility": "primary",
       "runtime_command": "setup-clarify",
       "notes": "يعالج الغموض قبل تثبيت الدستور."
     },
@@ -39,6 +41,7 @@
       "stage": "phase-03",
       "requirement_level": "mandatory",
       "execution_mode": "runtime-backed",
+      "visibility": "primary",
       "runtime_command": "generate-constitution",
       "notes": "أمر حوكمي مدعوم بمحرك يولد الدستور."
     },
@@ -49,6 +52,7 @@
       "stage": "phase-04",
       "requirement_level": "mandatory",
       "execution_mode": "runtime-backed",
+      "visibility": "primary",
       "runtime_command": "setup-research",
       "notes": "يجهز البحث لكنه يبقى موجّهًا حوكميًا."
     },
@@ -59,6 +63,7 @@
       "stage": "phase-05",
       "requirement_level": "mandatory",
       "execution_mode": "runtime-backed",
+      "visibility": "primary",
       "runtime_command": "setup-plan",
       "notes": "يربط التخطيط بالبوابات السابقة."
     },
@@ -69,6 +74,7 @@
       "stage": "phase-06",
       "requirement_level": "mandatory",
       "execution_mode": "runtime-backed",
+      "visibility": "primary",
       "runtime_command": "setup-tasks",
       "notes": "يفصل التنفيذ إلى مهام تحت الحوكمة."
     },
@@ -78,7 +84,8 @@
       "family": "Gate",
       "stage": "phase-07",
       "requirement_level": "conditional",
-      "execution_mode": "hybrid",
+      "execution_mode": "runtime-backed",
+      "visibility": "optional",
       "runtime_command": "setup-checklist",
       "notes": "طبقة مراجعة قبل التنفيذ أو التسليم."
     },
@@ -88,7 +95,8 @@
       "family": "Gate",
       "stage": "phase-08",
       "requirement_level": "mandatory",
-      "execution_mode": "hybrid",
+      "execution_mode": "strong-hybrid",
+      "visibility": "primary",
       "runtime_command": "setup-review",
       "notes": "يبقى قرارًا حوكميًا لا أمر تشغيل."
     },
@@ -98,7 +106,8 @@
       "family": "Gate",
       "stage": "phase-09",
       "requirement_level": "mandatory",
-      "execution_mode": "hybrid",
+      "execution_mode": "strong-hybrid",
+      "visibility": "primary",
       "runtime_command": "setup-implement",
       "notes": "تنفيذ موجّه بشريًا أو عبر وكيل، لا أمر CLI مستقل."
     },
@@ -109,6 +118,7 @@
       "stage": "inspection",
       "requirement_level": "mandatory",
       "execution_mode": "runtime-backed",
+      "visibility": "operational",
       "runtime_command": "feature-status",
       "notes": "فحص مباشر لحالة الميزة."
     },
@@ -119,6 +129,7 @@
       "stage": "inspection",
       "requirement_level": "mandatory",
       "execution_mode": "runtime-backed",
+      "visibility": "operational",
       "runtime_command": "healthcheck",
       "notes": "فحص جودة وتتبع صحة المخرجات."
     },
@@ -129,6 +140,7 @@
       "stage": "deep-inspection",
       "requirement_level": "optional",
       "execution_mode": "hybrid",
+      "visibility": "optional",
       "runtime_command": "setup-analyze",
       "notes": "تحليل عميق مع سياسات منفصلة عن التنفيذ."
     },
@@ -139,6 +151,7 @@
       "stage": "change-control",
       "requirement_level": "optional",
       "execution_mode": "runtime-backed",
+      "visibility": "operational",
       "runtime_command": "update-sync-state",
       "notes": "تحكم في المزامنة وحالة التغييرات."
     },
@@ -148,9 +161,10 @@
       "family": "Inspection",
       "stage": "change-control",
       "requirement_level": "optional",
-      "execution_mode": "hybrid",
+      "execution_mode": "runtime-backed",
+      "visibility": "optional",
       "runtime_command": "setup-diff",
-      "notes": "لا يملك دعم تشغيل رسميًا بعد."
+      "notes": "مقارنة تنفيذية بين الحالة الحالية وآخر خط مزامنة معروف."
     },
     {
       "name": "dashboard",
@@ -159,6 +173,7 @@
       "stage": "reporting",
       "requirement_level": "optional",
       "execution_mode": "runtime-backed",
+      "visibility": "optional",
       "runtime_command": "export-dashboard",
       "notes": "طبقة فوقية للتجميع وليس من قلب الحوكمة."
     },
@@ -169,8 +184,9 @@
       "stage": "reporting",
       "requirement_level": "optional",
       "execution_mode": "runtime-backed",
+      "visibility": "optional",
       "runtime_command": "record-analytics",
-      "notes": "يعتمد على بيانات analytics الاختيارية."
+      "notes": "يعتمد على بيانات التحليلات الاختيارية."
     },
     {
       "name": "export",
@@ -179,6 +195,7 @@
       "stage": "reporting",
       "requirement_level": "optional",
       "execution_mode": "runtime-backed",
+      "visibility": "optional",
       "runtime_command": "export-dashboard",
       "notes": "قدرة تقريرية اختيارية."
     },
@@ -189,6 +206,7 @@
       "stage": "bootstrap",
       "requirement_level": "mandatory",
       "execution_mode": "runtime-backed",
+      "visibility": "primary",
       "runtime_command": "init",
       "notes": "أمر الإدارة التأسيسي للقلب."
     },
@@ -199,6 +217,7 @@
       "stage": "onboarding",
       "requirement_level": "optional",
       "execution_mode": "hybrid",
+      "visibility": "optional",
       "runtime_command": "setup-quickstart",
       "notes": "طبقة تهيئة ذهنية للمستخدم."
     },
@@ -209,6 +228,7 @@
       "stage": "onboarding",
       "requirement_level": "optional",
       "execution_mode": "hybrid",
+      "visibility": "primary",
       "runtime_command": "setup-guide",
       "notes": "شرح وإرشاد لا تشغيل مباشر."
     },
@@ -219,6 +239,7 @@
       "stage": "integration",
       "requirement_level": "optional",
       "execution_mode": "hybrid",
+      "visibility": "optional",
       "runtime_command": "setup-taskstoissues",
       "notes": "تكامل خارجي اختياري رسميًا."
     }

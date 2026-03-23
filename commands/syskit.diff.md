@@ -4,7 +4,8 @@ command_name: diff
 command_family: Inspection
 command_stage: change-control
 command_requirement_level: optional
-command_execution_mode: hybrid
+command_visibility: optional
+command_execution_mode: runtime-backed
 runtime_command: setup-diff
 ---
 

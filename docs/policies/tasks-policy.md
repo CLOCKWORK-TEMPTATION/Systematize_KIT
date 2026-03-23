@@ -1,29 +1,29 @@
-# Task Generation Policy
+# سياسة توليد المهام
 
-This document contains the extracted heavy governance policy for the corresponding command.
+هذه الوثيقة تحتوي على السياسة الحاكمة الثقيلة المستخرجة للأمر المقابل.
 
 ```text
 commands/syskit.tasks.md
 ```
 
-The orchestration command should load and follow this policy before producing its output.
+يجب على أمر التنسيق أن يحمّل هذه السياسة ويتبعها قبل إنتاج مخرجاته.
 
 ---
 
-## User Input
+## مدخل المستخدم
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+يجب أخذ مدخل المستخدم في الحسبان قبل المتابعة إذا لم يكن فارغًا.
 
-## Governing Principles
+## المبادئ الحاكمة
 
 > **Every task is a contract**: atomic, traceable, layer-typed, time-estimated, and acceptance-tested.
 > No vague tasks. No tasks without outputs. No tasks without a source in the plan or sys.
 
-### Core Rules
+### القواعد الأساسية
 
 1. **ATOMIC DECOMPOSITION** — Every task completable in ONE work session (2–4 hours max). If larger, split it.
 2. **TASK FORMULA** — Every task description follows: `[Action] + [Component/File] + [Implementation Details] + [Acceptance Criterion]`
@@ -34,7 +34,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 7. **TIME ESTIMATES ARE MANDATORY** — Every task has an estimate in hours (max 4h).
 8. **RISKS WHERE RELEVANT** — Document risks/attention points for non-trivial tasks.
 
-### Banned Task Styles
+### أنماط المهام الممنوعة
 
 | ❌ Avoid | ✅ Do |
 |----------|-------|
@@ -45,7 +45,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 | Assuming knowledge | Document technical notes |
 | No source reference | Every task links to plan.md §X or sys.md FR-XXX |
 
-## Pre-Execution Checks
+## فحوص ما قبل التنفيذ
 
 **Check for extension hooks (before tasks generation)**:
 - Check if `.Systematize/config/extensions.yml` exists in the project root.
@@ -79,7 +79,7 @@ You **MUST** consider the user input before proceeding (if not empty).
     ```
 - If no hooks are registered or `.Systematize/config/extensions.yml` does not exist, skip silently
 
-## Outline
+## المخطط
 
 1. **Setup**: Run the prerequisites check script from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
    - **PowerShell**: `pwsh -File .Systematize/scripts/powershell/check-prerequisites.ps1 -Json`
@@ -227,13 +227,13 @@ Context for task generation: $ARGUMENTS
 
 The tasks.md should be immediately executable — each task must be specific enough that an LLM can complete it without additional context.
 
-## Task Generation Rules
+## قواعد توليد المهام
 
 **CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
 
 **Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature systematize document or if user requests TDD approach.
 
-### Task Card Format (REQUIRED)
+### صيغة بطاقة المهمة
 
 Every task MUST be a full Task Card section following `.Systematize/templates/tasks-template.md`:
 
@@ -274,7 +274,7 @@ Every task MUST be a full Task Card section following `.Systematize/templates/ta
 - [ ] FE-T-001 — [Title]
 ```
 
-### Layer-Prefixed ID System
+### نظام المعرفات بحسب الطبقة
 
 | Layer | Prefix | Sequential within layer |
 |-------|--------|----------------------|
@@ -285,7 +285,7 @@ Every task MUST be a full Task Card section following `.Systematize/templates/ta
 
 IDs are sequential within each layer (not globally). This enables filtering and distribution by layer.
 
-### Task Organization
+### تنظيم المهام
 
 1. **From User Stories (sys.md)** — PRIMARY ORGANIZATION:
    - Each user story (P1, P2, P3...) gets its own phase
@@ -317,7 +317,7 @@ IDs are sequential within each layer (not globally). This enables filtering and 
    - Risk registry (plan.md §9) → inform task risks/attention points
    - Milestones (plan.md §7.2) → map tasks to milestones
 
-### Phase Structure
+### بنية المراحل
 
 - **Phase 1**: Setup (project initialization) — primarily DO-T-xxx
 - **Phase 2**: Foundational (blocking prerequisites — MUST complete before user stories) — mixed layers
@@ -328,7 +328,7 @@ IDs are sequential within each layer (not globally). This enables filtering and 
   - **Milestone**: Mapped from plan.md §7.2
 - **Final Phase**: Polish & Cross-Cutting Concerns — primarily CC-T-xxx
 
-### Estimate Guidelines
+### إرشادات التقدير
 
 | Task Type | Typical Estimate |
 |-----------|-----------------|
@@ -347,7 +347,7 @@ IDs are sequential within each layer (not globally). This enables filtering and 
 
 If a task exceeds 4h, it MUST be split into subtasks.
 
-## Output
+## المخرجات
 
 - **Primary format**: Task generation summary in Markdown.
 - **Files created or updated**: `tasks.md`.

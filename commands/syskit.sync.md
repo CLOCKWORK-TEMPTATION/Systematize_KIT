@@ -4,6 +4,7 @@ command_name: sync
 command_family: Inspection
 command_stage: change-control
 command_requirement_level: optional
+command_visibility: operational
 command_execution_mode: runtime-backed
 runtime_command: update-sync-state
 handoffs:

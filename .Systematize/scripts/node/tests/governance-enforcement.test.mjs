@@ -17,10 +17,40 @@ function createTempRepo() {
   mkdirSync(join(tempRepo, '.Systematize', 'memory'), { recursive: true });
   mkdirSync(join(tempRepo, '.Systematize', 'config'), { recursive: true });
   mkdirSync(join(tempRepo, 'docs', 'policies'), { recursive: true });
-  writeFileSync(join(tempRepo, '.Systematize', 'templates', 'sys-template.md'), '# Sys\n', 'utf8');
-  writeFileSync(join(tempRepo, '.Systematize', 'templates', 'review-template.md'), '# Review\n', 'utf8');
+  writeFileSync(join(tempRepo, '.Systematize', 'templates', 'sys-template.md'), [
+    '# Sys',
+    '## Product Card',
+    '## Clarification Contract',
+    '### What Is Required',
+    '### What Is NOT Required',
+    '### Constraints',
+    '### Assumptions',
+    '### Critical Questions Resolved',
+    '### Clarification Checklist',
+    '## Level 3: Requirements',
+    '## Traceability Matrix',
+    '## Quality Audit'
+  ].join('\n'), 'utf8');
+  writeFileSync(join(tempRepo, '.Systematize', 'templates', 'review-template.md'), [
+    '# Review',
+    '## sys.md (PRD) Review',
+    '## plan.md Review',
+    '## tasks.md Review',
+    '## Review Verdict',
+    '**Verdict**: 🟢 APPROVED',
+    '## Review Gate'
+  ].join('\n'), 'utf8');
+  writeFileSync(join(tempRepo, '.Systematize', 'templates', 'checklist-template.md'), [
+    '# General Checklist: Test Feature',
+    '**Purpose**: Example',
+    '**Created**: 2026-03-23',
+    '**Feature**: sys.md',
+    '## Notes'
+  ].join('\n'), 'utf8');
   writeFileSync(join(tempRepo, '.Systematize', 'templates', 'plan-template.md'), '# Plan\n', 'utf8');
   writeFileSync(join(tempRepo, 'docs', 'policies', 'systematize-policy.md'), '# Policy\n', 'utf8');
+  writeFileSync(join(tempRepo, 'docs', 'policies', 'clarify-policy.md'), '# Clarify Policy\n', 'utf8');
+  writeFileSync(join(tempRepo, 'docs', 'policies', 'checklist-policy.md'), '# Checklist Policy\n', 'utf8');
   writeFileSync(join(tempRepo, 'docs', 'policies', 'analyze-policy.md'), '# Analyze Policy\n', 'utf8');
   return tempRepo;
 }
@@ -48,10 +78,10 @@ test('command catalog has zero integration-only commands', () => {
   assert.equal(integrationOnly.length, 0, `Commands still marked integration-only: ${integrationOnly.map((c) => c.name).join(', ')}`);
 });
 
-test('every hybrid command has a runtime_command reference', () => {
+test('every hybrid-like command has a runtime_command reference', () => {
   const catalog = JSON.parse(readFileSync(join(repoRoot, '.Systematize', 'config', 'command-catalog.json'), 'utf8'));
   for (const command of catalog.commands) {
-    if (command.execution_mode === 'hybrid') {
+    if (command.execution_mode === 'hybrid' || command.execution_mode === 'strong-hybrid') {
       assert.ok(command.runtime_command, `Hybrid command ${command.name} is missing runtime_command`);
     }
   }
@@ -70,13 +100,22 @@ test('every runtime_command in the catalog exists in cli.mjs COMMANDS', () => {
   }
 });
 
-test('every hybrid runtime module file exists', () => {
+test('every hybrid-like runtime module file exists', () => {
   const catalog = JSON.parse(readFileSync(join(repoRoot, '.Systematize', 'config', 'command-catalog.json'), 'utf8'));
   for (const command of catalog.commands) {
-    if (command.execution_mode === 'hybrid' && command.runtime_command) {
+    if ((command.execution_mode === 'hybrid' || command.execution_mode === 'strong-hybrid') && command.runtime_command) {
       const modulePath = join(repoRoot, '.Systematize', 'scripts', 'node', 'lib', `${command.runtime_command}.mjs`);
       assert.ok(existsSync(modulePath), `Runtime module missing for ${command.name}: ${modulePath}`);
     }
+  }
+});
+
+test('core governance commands no longer use plain hybrid execution', () => {
+  const catalog = JSON.parse(readFileSync(join(repoRoot, '.Systematize', 'config', 'command-catalog.json'), 'utf8'));
+  for (const commandName of ['systematize', 'clarify', 'checklist', 'review', 'implement', 'diff']) {
+    const command = catalog.commands.find((entry) => entry.name === commandName);
+    assert.ok(command, `Command not found: ${commandName}`);
+    assert.notEqual(command.execution_mode, 'hybrid', `${commandName} must no longer remain plain hybrid`);
   }
 });
 
@@ -91,6 +130,10 @@ test('command markdown files match catalog execution_mode', () => {
     assert.ok(
       content.includes(`runtime_command: ${command.runtime_command ?? 'null'}`),
       `${command.file} has wrong runtime_command (expected ${command.runtime_command ?? 'null'})`
+    );
+    assert.ok(
+      content.includes(`command_visibility: ${command.visibility}`),
+      `${command.file} has wrong visibility (expected ${command.visibility})`
     );
   }
 });
@@ -272,7 +315,7 @@ test('setup-clarify succeeds with valid prerequisites', () => {
   const featureDir = join(tempRepo, 'features', '001-test');
   try {
     mkdirSync(featureDir, { recursive: true });
-    writeFileSync(join(featureDir, 'sys.md'), '# Sys\nContent.\n', 'utf8');
+    writeFileSync(join(featureDir, 'sys.md'), readFileSync(join(tempRepo, '.Systematize', 'templates', 'sys-template.md'), 'utf8'), 'utf8');
     const output = execFileSync(
       'node', [cliPath, 'setup-clarify', '--json', '--branch', '001-test'],
       { cwd: tempRepo, encoding: 'utf8' }
@@ -280,6 +323,7 @@ test('setup-clarify succeeds with valid prerequisites', () => {
     const result = JSON.parse(output);
     assert.ok(result.FEATURE_SYS);
     assert.equal(result.BRANCH, '001-test');
+    assert.equal(result.runtime_contract.execution_mode, 'strong-hybrid');
   } finally {
     rmSync(tempRepo, { recursive: true, force: true });
   }
@@ -290,7 +334,7 @@ test('setup-review succeeds with all three artifacts', () => {
   const featureDir = join(tempRepo, 'features', '001-test');
   try {
     mkdirSync(featureDir, { recursive: true });
-    writeFileSync(join(featureDir, 'sys.md'), '# Sys\nContent.\n', 'utf8');
+    writeFileSync(join(featureDir, 'sys.md'), readFileSync(join(tempRepo, '.Systematize', 'templates', 'sys-template.md'), 'utf8'), 'utf8');
     writeFileSync(join(featureDir, 'plan.md'), '# Plan\nContent.\n', 'utf8');
     writeFileSync(join(featureDir, 'tasks.md'), '# Tasks\nContent.\n', 'utf8');
     const output = execFileSync(
@@ -302,24 +346,74 @@ test('setup-review succeeds with all three artifacts', () => {
     assert.ok(result.FEATURE_SYS);
     assert.ok(result.IMPL_PLAN);
     assert.ok(result.TASKS);
+    assert.equal(result.runtime_contract.execution_mode, 'strong-hybrid');
   } finally {
     rmSync(tempRepo, { recursive: true, force: true });
   }
 });
 
-test('setup-checklist creates checklists directory', () => {
+test('setup-checklist creates checklist artifact contract', () => {
   const tempRepo = createTempRepo();
   const featureDir = join(tempRepo, 'features', '001-test');
   try {
     mkdirSync(featureDir, { recursive: true });
-    writeFileSync(join(featureDir, 'sys.md'), '# Sys\nContent.\n', 'utf8');
+    writeFileSync(join(featureDir, 'sys.md'), readFileSync(join(tempRepo, '.Systematize', 'templates', 'sys-template.md'), 'utf8'), 'utf8');
     const output = execFileSync(
-      'node', [cliPath, 'setup-checklist', '--json', '--branch', '001-test'],
+      'node', [cliPath, 'setup-checklist', '--json', '--branch', '001-test', '--domain', 'ux'],
       { cwd: tempRepo, encoding: 'utf8' }
     );
     const result = JSON.parse(output);
     assert.ok(result.CHECKLISTS_DIR);
+    assert.ok(result.CHECKLIST_FILE);
     assert.equal(existsSync(result.CHECKLISTS_DIR), true);
+    assert.equal(result.runtime_contract.execution_mode, 'runtime-backed');
+  } finally {
+    rmSync(tempRepo, { recursive: true, force: true });
+  }
+});
+
+test('setup-implement requires an accepted review gate', () => {
+  const tempRepo = createTempRepo();
+  const featureDir = join(tempRepo, 'features', '001-test');
+  try {
+    mkdirSync(featureDir, { recursive: true });
+    writeFileSync(join(featureDir, 'sys.md'), readFileSync(join(tempRepo, '.Systematize', 'templates', 'sys-template.md'), 'utf8'), 'utf8');
+    writeFileSync(join(featureDir, 'plan.md'), '# Plan\nContent.\n', 'utf8');
+    writeFileSync(join(featureDir, 'tasks.md'), '# Tasks\nContent.\n', 'utf8');
+
+    const missingReview = captureFailure(() => execFileSync(
+      'node', [cliPath, 'setup-implement', '--json', '--branch', '001-test'],
+      { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }
+    ));
+    assert.match(missingReview, /review/i);
+
+    writeFileSync(join(featureDir, 'review.md'), '## Review Verdict\n**Verdict**: 🔴 CHANGES REQUIRED\n## Review Gate\n', 'utf8');
+    const blockedReview = captureFailure(() => execFileSync(
+      'node', [cliPath, 'setup-implement', '--json', '--branch', '001-test'],
+      { cwd: tempRepo, encoding: 'utf8', stdio: 'pipe' }
+    ));
+    assert.match(blockedReview, /blocked/i);
+  } finally {
+    rmSync(tempRepo, { recursive: true, force: true });
+  }
+});
+
+test('setup-implement succeeds with an accepted review gate', () => {
+  const tempRepo = createTempRepo();
+  const featureDir = join(tempRepo, 'features', '001-test');
+  try {
+    mkdirSync(featureDir, { recursive: true });
+    writeFileSync(join(featureDir, 'sys.md'), readFileSync(join(tempRepo, '.Systematize', 'templates', 'sys-template.md'), 'utf8'), 'utf8');
+    writeFileSync(join(featureDir, 'plan.md'), '# Plan\nContent.\n', 'utf8');
+    writeFileSync(join(featureDir, 'tasks.md'), '# Tasks\nContent.\n', 'utf8');
+    writeFileSync(join(featureDir, 'review.md'), '## Review Verdict\n**Verdict**: 🟢 APPROVED\n## Review Gate\n', 'utf8');
+    const output = execFileSync(
+      'node', [cliPath, 'setup-implement', '--json', '--branch', '001-test'],
+      { cwd: tempRepo, encoding: 'utf8' }
+    );
+    const result = JSON.parse(output);
+    assert.equal(result.runtime_contract.execution_mode, 'strong-hybrid');
+    assert.equal(result.review_verdict.includes('APPROVED'), true);
   } finally {
     rmSync(tempRepo, { recursive: true, force: true });
   }
@@ -327,9 +421,9 @@ test('setup-checklist creates checklists directory', () => {
 
 // ── Distribution: all execution modes are accounted for ──
 
-test('catalog only contains runtime-backed and hybrid execution modes', () => {
+test('catalog only contains runtime-backed, strong-hybrid, and hybrid execution modes', () => {
   const catalog = JSON.parse(readFileSync(join(repoRoot, '.Systematize', 'config', 'command-catalog.json'), 'utf8'));
-  const validModes = new Set(['runtime-backed', 'hybrid']);
+  const validModes = new Set(['runtime-backed', 'strong-hybrid', 'hybrid']);
   for (const command of catalog.commands) {
     assert.ok(
       validModes.has(command.execution_mode),

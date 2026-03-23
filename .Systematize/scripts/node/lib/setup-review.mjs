@@ -1,6 +1,5 @@
-// Setup review prerequisites for a feature
-import { existsSync, copyFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   ensureDir,
   getCurrentBranch,
@@ -12,15 +11,31 @@ import {
   resolveTemplate,
   testFeatureBranch
 } from './common.mjs';
+import {
+  assertPathWithinFeatureDir,
+  buildRuntimeSuccessEnvelope,
+  createValidationCheck,
+  ensureScaffoldFromTemplate,
+  failRuntimeContract,
+  getRuntimeContract,
+  validatePlaceholders,
+  validateRequiredSections
+} from './command-runtime-contracts.mjs';
+
+function buildNextValidationCommand(branch) {
+  return `node .Systematize/scripts/node/cli.mjs setup-review --branch ${branch} --validate-existing --json`;
+}
 
 export default async function main(argv) {
   const opts = parseArgs(argv);
+  const contract = getRuntimeContract('setup-review');
 
   if (opts.help) {
     console.log('Usage: syskit setup-review [OPTIONS]');
-    console.log('  --branch  Target feature branch');
-    console.log('  --json    Output results in JSON format');
-    console.log('  --help    Show this help message');
+    console.log('  --branch             Target feature branch');
+    console.log('  --json               Output results in JSON format');
+    console.log('  --validate-existing  Validate the populated review gate');
+    console.log('  --help               Show this help message');
     return;
   }
 
@@ -31,70 +46,131 @@ export default async function main(argv) {
     ? getFeatureDir(repoRoot, branch, { mutating: true, ensureExists: true })
     : paths.FEATURE_DIR;
 
-  // Check if we're on a proper feature branch
   if (!testFeatureBranch(branch) && paths.HAS_GIT) {
-    console.error('ERROR: Not on a feature branch.');
-    console.error('Feature branches should be named like: 001-feature-name');
-    process.exit(1);
+    failRuntimeContract(
+      opts,
+      'SYSKIT_BRANCH_INVALID',
+      'invalid_feature_branch',
+      'Not on a feature branch.',
+      ['Feature branches should be named like: 001-feature-name']
+    );
   }
 
   ensureDir(featureDir);
 
-  // Gate: sys.md must exist
   const sysFile = join(featureDir, 'sys.md');
   if (!existsSync(sysFile)) {
-    console.error(`ERROR: sys.md not found in ${featureDir}`);
-    console.error('Run /syskit.systematize first to create the governing sys document.');
-    process.exit(1);
+    failRuntimeContract(
+      opts,
+      'SYSKIT_SYS_MISSING',
+      'missing_sys_file',
+      `sys.md not found in ${featureDir}`,
+      ['Run /syskit.systematize first to create the governing sys document.']
+    );
   }
 
-  // Gate: plan.md must exist and be complete
   const planFile = join(featureDir, 'plan.md');
   const planStatus = getDocumentCompletionStatus(planFile);
   if (planStatus.status === 'not_started') {
-    console.error(`ERROR: plan.md not found in ${featureDir}`);
-    console.error('Run /syskit.plan first to create the implementation plan.');
-    process.exit(1);
+    failRuntimeContract(
+      opts,
+      'SYSKIT_PLAN_MISSING',
+      'missing_plan_file',
+      `plan.md not found in ${featureDir}`,
+      ['Run /syskit.plan first to create the implementation plan.']
+    );
   }
 
-  // Gate: tasks.md must exist
   const tasksFile = join(featureDir, 'tasks.md');
   const tasksStatus = getDocumentCompletionStatus(tasksFile);
   if (tasksStatus.status === 'not_started') {
-    console.error(`ERROR: tasks.md not found in ${featureDir}`);
-    console.error('Run /syskit.tasks first to create the task breakdown.');
-    process.exit(1);
+    failRuntimeContract(
+      opts,
+      'SYSKIT_TASKS_MISSING',
+      'missing_tasks_file',
+      `tasks.md not found in ${featureDir}`,
+      ['Run /syskit.tasks first to create the task breakdown.']
+    );
   }
 
-  // Copy review template if it exists
+  const reviewTemplate = resolveTemplate(repoRoot, 'review-template');
+  if (!reviewTemplate || !existsSync(reviewTemplate)) {
+    failRuntimeContract(
+      opts,
+      'SYSKIT_REVIEW_TEMPLATE_MISSING',
+      'missing_review_template',
+      'Review template could not be resolved.'
+    );
+  }
+
   const reviewFile = join(featureDir, 'review.md');
+  if (!opts['validate-existing']) {
+    ensureScaffoldFromTemplate(reviewFile, reviewTemplate);
+  }
+
   if (!existsSync(reviewFile)) {
-    const template = resolveTemplate(repoRoot, 'review-template');
-    if (template && existsSync(template)) {
-      copyFileSync(template, reviewFile);
-      if (!opts.json) console.log(`Copied review template to ${reviewFile}`);
-    } else {
-      if (!opts.json) console.warn('Review template not found');
-      writeFileSync(reviewFile, '', 'utf8');
+    failRuntimeContract(
+      opts,
+      'SYSKIT_REVIEW_MISSING',
+      'missing_review_artifact',
+      'review.md could not be prepared for the active feature.'
+    );
+  }
+
+  const validationChecks = [
+    createValidationCheck(
+      'path:feature_sys',
+      assertPathWithinFeatureDir(featureDir, sysFile, 'sys.md'),
+      'FEATURE_SYS resolves inside the active feature workspace'
+    ),
+    createValidationCheck(
+      'path:plan',
+      assertPathWithinFeatureDir(featureDir, planFile, 'plan.md'),
+      'IMPL_PLAN resolves inside the active feature workspace'
+    ),
+    createValidationCheck(
+      'path:tasks',
+      assertPathWithinFeatureDir(featureDir, tasksFile, 'tasks.md'),
+      'TASKS resolves inside the active feature workspace'
+    ),
+    createValidationCheck(
+      'path:review',
+      assertPathWithinFeatureDir(featureDir, reviewFile, 'review.md'),
+      'REVIEW resolves inside the active feature workspace'
+    ),
+    ...validateRequiredSections(reviewFile, contract.required_output_sections)
+  ];
+
+  if (opts['validate-existing']) {
+    const placeholderValidation = validatePlaceholders(reviewFile);
+    validationChecks.push(...placeholderValidation.checks);
+
+    if (placeholderValidation.unresolved_placeholders.length > 0) {
+      failRuntimeContract(
+        opts,
+        'SYSKIT_REVIEW_PLACEHOLDERS',
+        'review_contains_placeholders',
+        'Review gate still contains unresolved placeholders.',
+        placeholderValidation.unresolved_placeholders
+      );
     }
   }
 
-  const result = {
-    FEATURE_SYS: sysFile,
-    IMPL_PLAN: planFile,
-    TASKS: tasksFile,
-    REVIEW: reviewFile,
-    FEATURES_DIR: featureDir,
-    AMINOOOF_DIR: featureDir,
-    BRANCH: branch,
-    HAS_GIT: paths.HAS_GIT
-  };
-
-  if (opts.json) {
-    console.log(JSON.stringify(result, null, 2));
-  } else {
-    for (const [key, value] of Object.entries(result)) {
-      console.log(`${key}: ${value}`);
-    }
-  }
+  buildRuntimeSuccessEnvelope({
+    opts,
+    contract,
+    payload: {
+      FEATURE_SYS: sysFile,
+      IMPL_PLAN: planFile,
+      TASKS: tasksFile,
+      REVIEW: reviewFile,
+      FEATURES_DIR: featureDir,
+      FEATURE_DIR: featureDir,
+      BRANCH: branch,
+      HAS_GIT: paths.HAS_GIT
+    },
+    validationChecks,
+    mode: opts['validate-existing'] ? 'validate-existing' : 'setup',
+    nextValidationCommand: opts['validate-existing'] ? null : buildNextValidationCommand(branch)
+  });
 }

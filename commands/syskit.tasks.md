@@ -4,6 +4,7 @@ command_name: tasks
 command_family: Gate
 command_stage: phase-06
 command_requirement_level: mandatory
+command_visibility: primary
 command_execution_mode: runtime-backed
 runtime_command: setup-tasks
 handoffs:
